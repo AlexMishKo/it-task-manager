@@ -1,0 +1,69 @@
+[
+  { "model": "manager.tasktype", "pk": 1, "fields": { "name": "Bug" } },
+  { "model": "manager.tasktype", "pk": 2, "fields": { "name": "Feature" } },
+  { "model": "manager.tasktype", "pk": 3, "fields": { "name": "Refactoring" } },
+  { "model": "manager.tasktype", "pk": 4, "fields": { "name": "Documentation" } },
+  { "model": "manager.tasktype", "pk": 5, "fields": { "name": "Testing" } },
+  { "model": "manager.tasktype", "pk": 6, "fields": { "name": "Deployment" } },
+  { "model": "manager.tasktype", "pk": 7, "fields": { "name": "Design" } },
+
+  { "model": "manager.tag", "pk": 1, "fields": { "name": "Backend" } },
+  { "model": "manager.tag", "pk": 2, "fields": { "name": "Frontend" } },
+  { "model": "manager.tag", "pk": 3, "fields": { "name": "High Priority" } },
+  { "model": "manager.tag", "pk": 4, "fields": { "name": "API" } },
+  { "model": "manager.tag", "pk": 5, "fields": { "name": "Database" } },
+  { "model": "manager.tag", "pk": 6, "fields": { "name": "Security" } },
+  { "model": "manager.tag", "pk": 7, "fields": { "name": "UI/UX" } },
+
+  { "model": "manager.position", "pk": 1, "fields": { "name": "Python Developer" } },
+  { "model": "manager.position", "pk": 2, "fields": { "name": "Project Manager" } },
+  { "model": "manager.position", "pk": 3, "fields": { "name": "QA Engineer" } },
+  { "model": "manager.position", "pk": 4, "fields": { "name": "DevOps Engineer" } },
+  { "model": "manager.position", "pk": 5, "fields": { "name": "UI/UX Designer" } },
+  { "model": "manager.position", "pk": 6, "fields": { "name": "Frontend Developer" } },
+  { "model": "manager.position", "pk": 7, "fields": { "name": "Fullstack Developer" } },
+  { "model": "manager.position", "pk": 8, "fields": { "name": "Data Scientist" } },
+  { "model": "manager.position", "pk": 9, "fields": { "name": "Business Analyst" } },
+  { "model": "manager.position", "pk": 10, "fields": { "name": "System Administrator" } },
+  { "model": "manager.position", "pk": 11, "fields": { "name": "Mobile Developer (iOS/Android)" } },
+  { "model": "manager.position", "pk": 12, "fields": { "name": "Team Lead" } },
+  { "model": "manager.position", "pk": 13, "fields": { "name": "Security Specialist" } },
+  { "model": "manager.position", "pk": 14, "fields": { "name": "Database Administrator" } },
+  { "model": "manager.position", "pk": 15, "fields": { "name": "HR Manager" } },
+  {
+    "model": "manager.project",
+    "pk": 1,
+    "fields": {
+      "name": "E-commerce Platform",
+      "description": "Developing a high-load online store with microservices architecture.",
+      "teams": []
+    }
+  },
+  {
+    "model": "manager.project",
+    "pk": 2,
+    "fields": {
+      "name": "Mobile Banking App",
+      "description": "Secure mobile application for financial transactions and budget tracking.",
+      "teams": []
+    }
+  },
+  {
+    "model": "manager.project",
+    "pk": 3,
+    "fields": {
+      "name": "AI Content Generator",
+      "description": "A tool that uses machine learning to help creators generate marketing copy.",
+      "teams": []
+    }
+  },
+  {
+    "model": "manager.project",
+    "pk": 4,
+    "fields": {
+      "name": "Internal HR Portal",
+      "description": "System for tracking employee vacations, benefits, and performance reviews.",
+      "teams": []
+    }
+  }
+]

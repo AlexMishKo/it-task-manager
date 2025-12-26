@@ -79,7 +79,14 @@ class Task(models.Model):
         blank=True,
         related_name="tasks"
     )
-    assignees = models.ManyToManyField(Worker, related_name="tasks")
+    team = models.ForeignKey(
+        Team,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="tasks"
+    )
+    assignees = models.ManyToManyField(Worker, related_name="tasks", blank=True)
     priority = models.CharField(
         max_length=10,
         choices=PRIORITY_CHOICES,
