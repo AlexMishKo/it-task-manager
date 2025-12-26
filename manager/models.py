@@ -16,6 +16,13 @@ class TaskType(models.Model):
         return self.name
 
 
+class Tag(models.Model):
+    name = models.CharField(max_length=255, unique=True)
+
+    def __str__(self):
+        return self.name
+
+
 class Worker(AbstractUser):
     position = models.ForeignKey(
         Position,
@@ -30,3 +37,17 @@ class Worker(AbstractUser):
 
     def __str__(self):
         return f"{self.username} ({self.first_name} {self.last_name})"
+
+
+class Team(models.Model):
+    name = models.CharField(max_length=255, unique=True)
+    workers = models.ManyToManyField(Worker, related_name="teams")
+
+    def __str__(self):
+        return self.name
+
+
+class Project(models.Model):
+    name = models.CharField(max_length=255, unique=True)
+    description = models.TextField(blank=True)
+    teams = models.ManyToManyField(Team, related_name="projects")
