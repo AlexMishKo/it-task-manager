@@ -42,8 +42,9 @@
                 </li>
 
                 <li>
-                    <a href="#">
-                        📂 Projects
+                    <a href="{% url 'manager:project-list' %}"
+                       class="{% if request.resolver_match.url_name == 'project-list' %}active{% endif %}">
+                       📂 Projects
                     </a>
                 </li>
 

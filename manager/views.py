@@ -70,6 +70,25 @@ class WorkerListView(generic.ListView):
         return context
 
 
+class ProjectListView(generic.ListView):
+    model = Project
+    template_name = "manager/project_list.html"
+    context_object_name = "project_list"
+    paginate_by = 10
+
+    def get_queryset(self):
+        queryset = Project.objects.prefetch_related("teams")
+        name = self.request.GET.get("name", "")
+        if name:
+            return queryset.filter(name__icontains=name)
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["search_name"] = self.request.GET.get("name", "")
+        return context
+
+
 
 
 
