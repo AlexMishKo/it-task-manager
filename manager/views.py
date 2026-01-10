@@ -1,5 +1,11 @@
 from django.shortcuts import render
-from .models import Worker, Task, Project, Team
+from django.views import generic
+from .models import (
+    Worker,
+    Task,
+    Project,
+    Team
+)
 
 def index(request):
     """View function for the home page of the site"""
@@ -24,6 +30,27 @@ def index(request):
     }
 
     return render(request, "manager/index.html", context=context)
+
+
+class TaskListView(generic.ListView):
+    model = Task
+    template_name = "manager/task_list.html"
+    context_object_name = "task_list"
+    paginate_by = 5
+
+    def get_queryset(self):
+        queryset = Task.objects.select_related("task_type", "project")
+        form_name = self.request.GET.get("name", "")
+        if form_name:
+            return queryset.filter(name__icontains=form_name)
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["search_name"] = self.request.GET.get("name", "")
+        return context
+
+
 
 
 
