@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="mb-8">
+    <h1 class="text-3xl font-bold">Dashboard</h1>
+    <p class="text-gray-500">Welcome back! Here's what's happening with your projects.</p>
+</div>
+
+<div class="stats shadow w-full bg-base-100 mb-8">
+  <div class="stat">
+    <div class="stat-figure text-primary">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block w-8 h-8 stroke-current"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+    </div>
+    <div class="stat-title">Total Workers</div>
+    <div class="stat-value text-primary">{{ num_workers }}</div>
+  </div>
+
+  <div class="stat">
+    <div class="stat-figure text-secondary">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block w-8 h-8 stroke-current"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+    </div>
+    <div class="stat-title">Tasks in Work</div>
+    <div class="stat-value text-secondary">{{ num_tasks }}</div>
+  </div>
+
+  <div class="stat">
+    <div class="stat-title">Projects</div>
+    <div class="stat-value">{{ num_projects }}</div>
+    <div class="stat-desc font-bold text-info">{{ num_teams }} Teams active</div>
+  </div>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div class="card bg-error text-error-content shadow-xl">
+        <div class="card-body">
+            <h2 class="card-title text-2xl uppercase font-black">Urgent Attention!</h2>
+            <p>There are <span class="text-3xl font-bold">{{ num_critical_tasks }}</span> uncompleted urgent tasks.</p>
+            <div class="card-actions justify-end">
+                <button class="btn btn-ghost btn-sm border-white">View Critical</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="card bg-success text-success-content shadow-xl">
+        <div class="card-body">
+            <h2 class="card-title italic">Overall Progress</h2>
+            <p>Completed tasks so far: <span class="text-3xl font-bold">{{ num_completed_tasks }}</span></p>
+            <progress class="progress progress-primary w-full" value="{{ num_completed_tasks }}" max="{{ num_tasks }}"></progress>
+        </div>
+    </div>
+</div>
+{% endblock %}
