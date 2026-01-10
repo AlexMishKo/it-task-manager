@@ -55,8 +55,9 @@
                 </li>
 
                 <li>
-                    <a href="#">
-                        👥 Workers
+                    <a href="{% url 'manager:worker-list' %}"
+                       class="{% if request.resolver_match.url_name == 'worker-list' %}active{% endif %}">
+                       👥 Workers
                     </a>
                 </li>
                 {% endwith %}

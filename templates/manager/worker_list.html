@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+    <div>
+        <h1 class="text-3xl font-black italic uppercase tracking-tighter text-primary">
+            Team Members
+        </h1>
+        <p class="text-base-content/60 text-sm italic">
+            Managing {{ page_obj.paginator.count }} IT specialists.
+        </p>
+    </div>
+    
+    <form method="get" class="join shadow-sm border border-base-300">
+        <input 
+            type="text"
+            name="username"
+            placeholder="Search by username..." 
+            value="{{ search_username }}"
+            class="input input-bordered join-item input-sm lg:input-md w-full max-w-xs focus:outline-none" 
+        />
+        <button type="submit" class="btn join-item btn-sm lg:btn-md btn-primary italic">
+            Search
+        </button>
+    </form>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {% for worker in worker_list %}
+    <div class="card bg-base-100 shadow-xl border border-base-300 hover:border-primary transition-colors">
+        <div class="card-body flex-row items-center gap-4">
+            <div class="avatar placeholder">
+                <div class="bg-neutral text-neutral-content rounded-full w-12">
+                    <span class="text-xl uppercase font-black">
+                        {{ worker.username|slice:":2" }}
+                    </span>
+                </div>
+            </div> 
+            
+            <div class="flex flex-col">
+                <h2 class="card-title text-lg font-bold">@{{ worker.username }}</h2>
+                <p class="text-sm opacity-60">
+                    {{ worker.first_name }} {{ worker.last_name }}
+                </p>
+                <div class="badge badge-outline badge-sm mt-2 font-bold uppercase text-[10px]">
+                    {{ worker.position.name|default:"Generalist" }}
+                </div>
+            </div>
+
+            <div class="card-actions justify-end ml-auto">
+                <a href="#" class="btn btn-ghost btn-circle btn-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-span-full text-center py-20 opacity-30">
+        <p class="text-2xl font-black italic">No workers found with that name.</p>
+    </div>
+    {% endfor %}
+</div>
+
+{% if is_paginated %}
+<div class="flex justify-center mt-12 mb-10">
+    <div class="join shadow-md">
+        {% if page_obj.has_previous %}
+            <a href="?{% if search_username %}username={{ search_username }}&{% endif %}page={{ page_obj.previous_page_number }}" 
+               class="join-item btn btn-md bg-base-100">«</a>
+        {% endif %}
+        
+        <button class="join-item btn btn-md btn-disabled bg-base-200 font-bold uppercase">
+            Page {{ page_obj.number }}
+        </button>
+
+        {% if page_obj.has_next %}
+            <a href="?{% if search_username %}username={{ search_username }}&{% endif %}page={{ page_obj.next_page_number }}" 
+               class="join-item btn btn-md bg-base-100">»</a>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+{% endblock %}

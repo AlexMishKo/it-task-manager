@@ -36,7 +36,7 @@ class TaskListView(generic.ListView):
     model = Task
     template_name = "manager/task_list.html"
     context_object_name = "task_list"
-    paginate_by = 5
+    paginate_by = 10
 
     def get_queryset(self):
         queryset = Task.objects.select_related("task_type", "project")
@@ -49,6 +49,26 @@ class TaskListView(generic.ListView):
         context = super().get_context_data(**kwargs)
         context["search_name"] = self.request.GET.get("name", "")
         return context
+
+
+class WorkerListView(generic.ListView):
+    model = Worker
+    template_name = "manager/worker_list.html"
+    context_object_name = "worker_list"
+    paginate_by = 10
+
+    def get_queryset(self):
+        queryset = Worker.objects.select_related("position")
+        username = self.request.GET.get("username", "")
+        if username:
+            return queryset.filter(username__icontains=username)
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["search_username"] = self.request.GET.get("username", "")
+        return context
+
 
 
 
