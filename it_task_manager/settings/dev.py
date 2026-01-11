@@ -2,9 +2,9 @@ from .base import *
 
 # SECURITY WARNING: don't run with debug turned on in production!
 
-DEBUG = os.environ.get("DJANGO_DEBUG", "") != "False"
+DEBUG = True
 
-ALLOWED_HOSTS = ["127.0.0.1"]
+ALLOWED_HOSTS = []
 
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
