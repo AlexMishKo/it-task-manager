@@ -1,4 +1,5 @@
 from django.test import TestCase
+from django.urls import reverse
 from django.utils import timezone
 from manager.models import (Position,
                             TaskType,
@@ -52,3 +53,75 @@ class ModelTests(TestCase):
         self.assertEqual(str(task), "Fix Login")
         self.assertEqual(task.priority, "urgent")
         self.assertFalse(task.is_completed)
+
+
+class ViewTests(TestCase):
+
+    def setUp(self):
+        self.position = Position.objects.create(name="Dev")
+        self.admin_user = Worker.objects.create_superuser(
+            username="admin.user",
+            password="adminpassword123"
+        )
+        self.worker_user = Worker.objects.create_user(
+            username="worker.user",
+            password="workerpassword123",
+            position=self.position
+        )
+
+        self.task_type = TaskType.objects.create(name="Feature")
+        self.project = Project.objects.create(name="Test Project")
+        self.task = Task.objects.create(
+            name="Test Task",
+            task_type=self.task_type,
+            project=self.project,
+            deadline=timezone.now().date(),
+            priority="medium"
+        )
+
+    def test_dashboard_access_logged_in(self):
+
+        self.client.login(username="worker.user", password="workerpassword123")
+        response = self.client.get(reverse("manager:index"))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "manager/index.html")
+
+    def test_task_list_search_by_name(self):
+
+        self.client.login(username="worker.user", password="workerpassword123")
+        url = reverse("manager:task-list")
+
+        response = self.client.get(url, {"name": "Test"})
+        self.assertContains(response, "Test Task")
+
+
+        response = self.client.get(url, {"name": "Missing"})
+        self.assertNotContains(response, "Test Task")
+
+    def test_toggle_task_completion_logic(self):
+
+        self.client.login(username="worker.user", password="workerpassword123")
+        url = reverse("manager:task-toggle-complete", kwargs={"pk": self.task.id})
+
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 302)
+
+        self.task.refresh_from_db()
+        self.assertTrue(self.task.is_completed)
+
+    def test_worker_cannot_delete_project(self):
+
+        self.client.login(username="worker.user", password="workerpassword123")
+        url = reverse("manager:project-delete", kwargs={"pk": self.project.id})
+
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 403)
+
+    def test_admin_can_delete_project(self):
+
+        self.client.login(username="admin.user", password="adminpassword123")
+        url = reverse("manager:project-delete", kwargs={"pk": self.project.id})
+
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
