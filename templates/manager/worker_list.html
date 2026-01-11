@@ -7,9 +7,11 @@
             <h1 class="text-3xl font-black italic uppercase tracking-tighter text-primary">
                 Team Members
             </h1>
+            {% if user.is_superuser %}
             <a href="{% url 'manager:worker-create' %}" class="btn btn-sm btn-primary italic font-black uppercase">
                 + Create Worker
             </a>
+            {% endif %}
         </div>
         <p class="text-base-content/60 text-sm italic">
             Managing {{ page_obj.paginator.count }} IT specialists.
@@ -32,28 +34,17 @@
 
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
     {% for worker in worker_list %}
-    <div class="card bg-base-100 shadow-xl border border-base-300 hover:border-primary transition-colors">
-        <div class="card-body flex-row items-center gap-4">
+    <div class="card bg-base-100 border border-base-300 shadow-sm hover:shadow-md transition-shadow">
+        <div class="card-body p-4 flex flex-row items-center gap-4">
             <div class="avatar placeholder">
-                <div class="bg-neutral text-neutral-content rounded-full w-12">
-                    <span class="text-xl uppercase font-black">
-                        {{ worker.username|slice:":2" }}
-                    </span>
-                </div>
-            </div> 
-            
-            <div class="flex flex-col">
-                <a href="{% url 'manager:worker-detail' pk=worker.id %}" class="hover:text-primary transition-colors">
-                    <h2 class="card-title text-lg font-bold">@{{ worker.username }}</h2>
-                </a>
-                <p class="text-sm opacity-60">
-                    {{ worker.first_name }} {{ worker.last_name }}
-                </p>
-                <div class="badge badge-outline badge-sm mt-2 font-bold uppercase text-[10px]">
-                    {{ worker.position.name|default:"Generalist" }}
+                <div class="bg-neutral text-neutral-content rounded-full w-12 font-black uppercase italic">
+                    {{ worker.username|slice:":2" }}
                 </div>
             </div>
-
+            <div>
+                <h3 class="font-black italic uppercase text-sm tracking-tight text-secondary">@{{ worker.username }}</h3>
+                <p class="text-[10px] font-bold opacity-40 uppercase">{{ worker.position.name }}</p>
+            </div>
             <div class="card-actions justify-end ml-auto">
                 <a href="{% url 'manager:worker-detail' pk=worker.id %}" class="btn btn-ghost btn-circle btn-sm">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -77,11 +68,9 @@
             <a href="?{% if search_username %}username={{ search_username }}&{% endif %}page={{ page_obj.previous_page_number }}" 
                class="join-item btn btn-md bg-base-100">«</a>
         {% endif %}
-        
         <button class="join-item btn btn-md btn-disabled bg-base-200 font-bold uppercase">
             Page {{ page_obj.number }}
         </button>
-
         {% if page_obj.has_next %}
             <a href="?{% if search_username %}username={{ search_username }}&{% endif %}page={{ page_obj.next_page_number }}" 
                class="join-item btn btn-md bg-base-100">»</a>

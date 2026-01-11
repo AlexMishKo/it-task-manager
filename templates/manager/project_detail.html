@@ -14,6 +14,7 @@
         </h1>
     </div>
     
+    {% if user.is_superuser %}
     <div class="flex gap-2">
         <a href="{% url 'manager:project-update' project.id %}" class="btn btn-sm btn-outline font-black uppercase italic">
             Edit Project
@@ -22,55 +23,59 @@
             Delete Project
         </a>
     </div>
+    {% endif %}
 </div>
 
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
     <div class="lg:col-span-1 space-y-6">
         <div class="bg-base-200 p-6 rounded-lg border-l-4 border-primary shadow-md">
             <h3 class="text-xs font-black opacity-50 uppercase tracking-widest mb-2 text-secondary">Description</h3>
-            <p class="text-sm leading-relaxed italic">
-                {{ project.description|default:"No description provided for this project." }}
-            </p>
+            <p class="text-sm leading-relaxed italic">{{ project.description }}</p>
         </div>
 
-        <div>
-            <h3 class="text-xs font-black opacity-50 uppercase tracking-widest mb-4">Assigned Teams</h3>
-            <div class="space-y-3">
+        <div class="bg-base-100 p-6 rounded-lg border border-base-300 shadow-sm">
+            <h3 class="text-xs font-black opacity-50 uppercase tracking-widest mb-4">Assigned Tactical Units</h3>
+            <div class="space-y-4">
                 {% for team in project.teams.all %}
-                <div class="collapse collapse-arrow bg-base-100 border border-base-300 shadow-sm">
-                    <input type="radio" name="teams-accordion" /> 
-                    <div class="collapse-title font-bold italic uppercase text-sm">{{ team.name }}</div>
+                <div class="collapse collapse-arrow bg-base-200 border border-base-300">
+                    <input type="checkbox" checked /> 
+                    <div class="collapse-title font-bold text-sm uppercase italic">
+                        {{ team.name }}
+                    </div>
                     <div class="collapse-content">
-                        <div class="flex flex-wrap gap-2 mt-2">
+                        <div class="grid grid-cols-1 gap-2 mt-2">
                             {% for worker in team.workers.all %}
-                            <a href="{% url 'manager:worker-detail' worker.id %}" class="badge badge-outline badge-sm font-bold">@{{ worker.username }}</a>
+                            <a href="{% url 'manager:worker-detail' worker.id %}" class="flex items-center gap-2 p-2 bg-base-100 rounded-md hover:text-primary transition-colors border border-transparent hover:border-primary/30">
+                                <div class="avatar placeholder">
+                                    <div class="bg-neutral text-neutral-content rounded-full w-6 text-[10px] font-black uppercase">
+                                        {{ worker.username|slice:":2" }}
+                                    </div>
+                                </div>
+                                <span class="text-xs font-bold italic">@{{ worker.username }}</span>
+                            </a>
                             {% endfor %}
                         </div>
                     </div>
                 </div>
                 {% empty %}
-                <p class="text-xs opacity-40 italic uppercase">No teams assigned.</p>
+                <p class="text-xs opacity-30 italic uppercase font-bold">No units deployed.</p>
                 {% endfor %}
             </div>
         </div>
     </div>
 
     <div class="lg:col-span-2">
-        <div class="bg-base-100 border border-base-300 rounded-xl overflow-hidden shadow-xl">
-            <div class="p-4 bg-base-300/50 border-b border-base-300 flex justify-between items-center">
-                <div class="flex items-center gap-4">
-                    <h3 class="text-sm font-black uppercase tracking-widest">Project Tasks</h3>
-                    <span class="badge badge-primary font-black">{{ project.tasks.count }}</span>
-                </div>
-                <a href="{% url 'manager:task-create' %}?project={{ project.id }}" class="btn btn-xs btn-primary font-black uppercase italic px-4">+ Add Task</a>
+        <div class="bg-base-100 rounded-xl border border-base-300 shadow-2xl overflow-hidden">
+            <div class="p-4 bg-base-200 border-b border-base-300 flex justify-between items-center">
+                <h3 class="font-black uppercase italic text-sm tracking-tight">Mission Backlog</h3>
+                <span class="badge badge-primary badge-sm font-bold">{{ project.tasks.count }} TASKS</span>
             </div>
-            
-            <div class="divide-y divide-base-300">
+            <div class="divide-y divide-base-200">
                 {% for task in project.tasks.all %}
-                <div class="p-4 hover:bg-base-200 transition-colors flex justify-between items-center group">
-                    <div>
+                <div class="p-4 flex items-center justify-between hover:bg-base-200/50 transition-colors group">
+                    <div class="flex-1">
                         <div class="flex items-center gap-3">
-                            <span class="text-lg font-bold italic tracking-tight {% if task.is_completed %}line-through opacity-40 text-success{% endif %}">
+                            <span class="font-black italic uppercase tracking-tight {% if task.is_completed %}line-through opacity-40 text-success{% endif %}">
                                 {{ task.name }}
                             </span>
                             <span class="badge badge-xs font-black uppercase 

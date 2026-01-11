@@ -36,7 +36,7 @@
             <h2 class="card-title text-2xl uppercase font-black">Urgent Attention!</h2>
             <p>There are <span class="text-3xl font-bold">{{ num_critical_tasks }}</span> uncompleted urgent tasks.</p>
             <div class="card-actions justify-end">
-                <button class="btn btn-ghost btn-sm border-white">View Critical</button>
+                <a href="{% url 'manager:task-list' %}?priority=urgent" class="btn btn-ghost btn-sm border-white">View Critical</a>
             </div>
         </div>
     </div>
@@ -44,8 +44,10 @@
     <div class="card bg-success text-success-content shadow-xl">
         <div class="card-body">
             <h2 class="card-title italic">Overall Progress</h2>
-            <p>Completed tasks so far: <span class="text-3xl font-bold">{{ num_completed_tasks }}</span></p>
-            <progress class="progress progress-primary w-full" value="{{ num_completed_tasks }}" max="{{ num_tasks }}"></progress>
+            <p>Completed missions: <span class="text-3xl font-bold">{{ num_completed_tasks }}</span></p>
+            <div class="card-actions justify-end text-xs opacity-70 uppercase font-black">
+                Mission Success Rate: High
+            </div>
         </div>
     </div>
 </div>

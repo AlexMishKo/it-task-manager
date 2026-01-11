@@ -7,9 +7,11 @@
             <h1 class="text-3xl font-black italic uppercase tracking-tighter text-primary">
                 Active Projects
             </h1>
+            {% if user.is_superuser %}
             <a href="{% url 'manager:project-create' %}" class="btn btn-sm btn-primary italic font-black uppercase">
                 + Create Project
             </a>
+            {% endif %}
         </div>
         <p class="text-base-content/60 text-sm italic">
             Strategic goals and product development.
@@ -29,25 +31,41 @@
     <div class="card bg-base-100 shadow-xl border border-base-300 overflow-hidden group hover:border-primary transition-all">
         <div class="card-body p-0">
             <div class="p-6">
-                <div class="flex justify-between items-start mb-2">
-                    <h2 class="card-title text-2xl font-black tracking-tight text-secondary uppercase italic">
-                        {{ project.name }}
-                    </h2>
-                    <div class="badge badge-secondary font-bold">{{ project.tasks.count }} Tasks</div>
-                </div>
-                <p class="text-sm opacity-70 line-clamp-2 min-h-[3rem] italic">
-                    {{ project.description|default:"No strategic data provided." }}
+                <h2 class="card-title text-2xl font-black italic uppercase tracking-tighter text-secondary mb-2">
+                    {{ project.name }}
+                </h2>
+                <p class="text-sm opacity-60 line-clamp-2 italic mb-4">
+                    {{ project.description|default:"No description provided for this objective." }}
                 </p>
-            </div>
 
-            <div class="bg-base-200/50 p-4 border-t border-base-300">
-                <p class="text-[10px] uppercase font-bold opacity-50 mb-2 tracking-widest">Involved Units (Teams)</p>
-                <div class="flex flex-wrap gap-2">
-                    {% for team in project.teams.all %}
-                        <span class="badge badge-neutral badge-sm font-bold italic">{{ team.name }}</span>
-                    {% empty %}
-                        <span class="text-[10px] opacity-30 italic uppercase">No units deployed</span>
-                    {% endfor %}
+                <div class="space-y-2">
+                    <p class="text-[10px] font-black uppercase opacity-40 tracking-widest">Assigned Units:</p>
+                    <div class="flex flex-col gap-2">
+                        {% for team in project.teams.all %}
+                        <div class="collapse collapse-arrow bg-base-200 border border-base-300 rounded-lg">
+                            <input type="checkbox" /> 
+                            <div class="collapse-title text-xs font-black uppercase italic min-h-0 py-2">
+                                🛡️ {{ team.name }}
+                            </div>
+                            <div class="collapse-content">
+                                <div class="grid grid-cols-1 gap-1 pt-2">
+                                    {% for worker in team.workers.all %}
+                                    <a href="{% url 'manager:worker-detail' worker.id %}" class="flex items-center gap-2 p-1 hover:bg-base-100 rounded transition-colors">
+                                        <div class="avatar placeholder">
+                                            <div class="bg-neutral text-neutral-content rounded-full w-5 text-[8px] font-black uppercase">
+                                                {{ worker.username|slice:":2" }}
+                                            </div>
+                                        </div>
+                                        <span class="text-[10px] font-bold">@{{ worker.username }}</span>
+                                    </a>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <p class="text-xs italic opacity-30 font-bold uppercase">No units deployed.</p>
+                        {% endfor %}
+                    </div>
                 </div>
             </div>
 
@@ -72,9 +90,7 @@
             <a href="?{% if search_name %}name={{ search_name }}&{% endif %}page={{ page_obj.previous_page_number }}"
                class="join-item btn btn-md bg-base-100 italic">« Prev</a>
         {% endif %}
-        
         <button class="join-item btn btn-md btn-active font-black italic">Sector {{ page_obj.number }}</button>
-        
         {% if page_obj.has_next %}
             <a href="?{% if search_name %}name={{ search_name }}&{% endif %}page={{ page_obj.next_page_number }}"
                class="join-item btn btn-md bg-base-100 italic">Next »</a>

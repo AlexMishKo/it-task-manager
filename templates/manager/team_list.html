@@ -7,12 +7,14 @@
             <h1 class="text-3xl font-black italic uppercase tracking-tighter text-primary">
                 Deployment Units (Teams)
             </h1>
+            {% if user.is_superuser %}
             <a href="{% url 'manager:team-create' %}" class="btn btn-sm btn-primary italic font-black uppercase">
                 + Form New Unit
             </a>
+            {% endif %}
         </div>
         <p class="text-base-content/60 text-sm italic">
-            Current tactical team distribution.
+            Current tactical team distribution and personnel roster.
         </p>
     </div>
 </div>
@@ -26,31 +28,39 @@
                     <h2 class="card-title text-2xl font-black italic uppercase tracking-tight text-secondary">
                         {{ team.name }}
                     </h2>
-                    <div class="badge badge-outline font-bold text-[10px] opacity-50 uppercase">Unit ID: {{ team.id }}</div>
+                    <div class="badge badge-outline font-bold text-[10px] opacity-50 uppercase">Unit ID: {{ team.id|stringformat:"03d" }}</div>
                 </div>
-
-                <div class="mb-6">
-                    <p class="text-[10px] uppercase font-bold opacity-40 mb-3 tracking-widest">Active Personnel</p>
-                    <div class="flex flex-wrap gap-2">
-                        {% for worker in team.workers.all %}
-                            <a href="{% url 'manager:worker-detail' pk=worker.id %}" class="badge badge-sm border-base-300 bg-base-100 font-bold hover:border-primary transition-colors">
-                                @{{ worker.username }}
-                            </a>
-                        {% empty %}
-                            <span class="text-xs italic opacity-30 uppercase">No operatives assigned</span>
-                        {% endfor %}
-                    </div>
-                </div>
-
-                <div>
-                    <p class="text-[10px] uppercase font-bold opacity-40 mb-2 tracking-widest">Assigned Sectors</p>
-                    <div class="space-y-1">
-                        {% for project in team.projects.all %}
-                            <div class="text-[11px] font-black italic uppercase text-primary/80">
-                                / {{ project.name }}
+                
+                <div class="space-y-4">
+                    <div class="collapse collapse-arrow bg-base-200 border border-base-300">
+                        <input type="checkbox" /> 
+                        <div class="collapse-title text-xs font-black uppercase italic flex items-center gap-2">
+                            👥 View Personnel ({{ team.workers.count }})
+                        </div>
+                        <div class="collapse-content">
+                            <div class="grid grid-cols-1 gap-2 mt-2">
+                                {% for worker in team.workers.all %}
+                                <a href="{% url 'manager:worker-detail' worker.id %}" class="flex items-center gap-2 p-2 bg-base-100 rounded-md hover:text-primary transition-colors">
+                                    <div class="avatar placeholder">
+                                        <div class="bg-neutral text-neutral-content rounded-full w-6 text-[10px] font-black uppercase">
+                                            {{ worker.username|slice:":2" }}
+                                        </div>
+                                    </div>
+                                    <span class="text-xs font-bold">@{{ worker.username }}</span>
+                                    <span class="text-[9px] opacity-40 uppercase ml-auto font-black">{{ worker.position.name }}</span>
+                                </a>
+                                {% endfor %}
                             </div>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-wrap gap-2">
+                        {% for project in team.projects.all %}
+                        <span class="text-[10px] font-black uppercase italic text-primary bg-primary/10 px-2 py-1 rounded">
+                            {{ project.name }}
+                        </span>
                         {% empty %}
-                            <span class="text-xs italic opacity-30 uppercase">Unassigned unit</span>
+                        <span class="text-xs italic opacity-30 uppercase font-bold">Unassigned unit</span>
                         {% endfor %}
                     </div>
                 </div>
@@ -58,14 +68,14 @@
 
             <div class="card-actions justify-end p-4 bg-base-200/50 border-t border-base-300">
                 <a href="{% url 'manager:team-detail' pk=team.id %}" class="btn btn-sm btn-ghost font-black italic uppercase tracking-tighter group-hover:text-primary">
-                    Unit Details →
+                    Full Unit Data →
                 </a>
             </div>
         </div>
     </div>
     {% empty %}
     <div class="col-span-full text-center py-20 bg-base-100 rounded-box border-2 border-dashed border-base-300">
-        <p class="text-xl font-bold opacity-30 italic uppercase">No tactical units currently deployed in the field.</p>
+        <p class="text-xl font-bold opacity-30 italic uppercase">No tactical units currently deployed.</p>
     </div>
     {% endfor %}
 </div>
@@ -76,9 +86,7 @@
         {% if page_obj.has_previous %}
             <a href="?page={{ page_obj.previous_page_number }}" class="join-item btn btn-md bg-base-100">«</a>
         {% endif %}
-        
         <button class="join-item btn btn-md btn-active font-black italic uppercase">Unit Group {{ page_obj.number }}</button>
-        
         {% if page_obj.has_next %}
             <a href="?page={{ page_obj.next_page_number }}" class="join-item btn btn-md bg-base-100">»</a>
         {% endif %}
