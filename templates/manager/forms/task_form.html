@@ -1,43 +1,94 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="mb-6">
-    <a href="javascript:history.back()" class="text-xs font-bold uppercase opacity-50 hover:opacity-100 transition-opacity">
-        ← Abort Operation
-    </a>
-</div>
+<div class="min-h-[80vh] flex items-center justify-center py-12 px-4">
+    <div class="max-w-2xl w-full">
+        <a href="javascript:history.back()" class="btn btn-ghost btn-sm mb-6 text-base-content/50 hover:text-primary italic uppercase font-black">
+            ← Abort Operation
+        </a>
 
-<div class="max-w-2xl mx-auto">
-    <div class="bg-base-100 border border-base-300 rounded-xl overflow-hidden shadow-2xl">
-        <div class="p-8 border-b border-base-200 bg-base-200/30">
-            <h1 class="text-3xl font-black italic uppercase tracking-tighter text-primary leading-none">
-                {% if object %}Modify Mission{% else %}New Deployment{% endif %}
-            </h1>
-            <p class="text-[10px] font-black opacity-40 uppercase tracking-[0.3em] mt-2">Intelligence Update Form</p>
-        </div>
-
-        <form method="post" class="p-8 space-y-6">
-            {% csrf_token %}
-
-            {% for field in form %}
-                <div class="form-control">
-                    <label class="label">
-                        <span class="label-text font-black uppercase text-[10px] opacity-60 tracking-widest">{{ field.label }}</span>
-                    </label>
-                    {{ field }}
-                    {% if field.errors %}
-                        <div class="text-error text-xs mt-1 font-bold italic">{{ field.errors }}</div>
-                    {% endif %}
-                </div>
-            {% endfor %}
-
-            <div class="pt-6 flex gap-4">
-                <button type="submit" class="btn btn-primary flex-1 font-black italic uppercase">
-                    Confirm Data Transmission
-                </button>
-                <a href="javascript:history.back()" class="btn btn-ghost font-black italic uppercase">Cancel</a>
+        <div class="card bg-base-100 shadow-2xl border border-base-300 overflow-hidden">
+            <div class="bg-base-200/50 p-8 border-b border-base-300 text-center">
+                <h2 class="text-4xl font-black italic uppercase tracking-tighter text-primary leading-none">
+                    Data Entry Protocol
+                </h2>
+                <p class="text-[10px] font-bold opacity-50 uppercase tracking-[0.3em] mt-3">
+                    Secure Intelligence Update
+                </p>
             </div>
-        </form>
+
+            <div class="card-body p-8 bg-base-100">
+                <form method="post" class="space-y-5">
+                    {% csrf_token %}
+                    
+                    {% for field in form %}
+                        <div class="form-control w-full">
+                            <label class="label">
+                                <span class="label-text font-black uppercase italic text-xs opacity-70">
+                                    {{ field.label }}
+                                </span>
+                            </label>
+                            
+                            {# Ручна стилізація полів для 100% чіткості #}
+                            <div class="relative">
+                                {{ field }}
+                            </div>
+
+                            {% if field.errors %}
+                                <div class="text-error text-[10px] font-bold uppercase mt-1 italic">
+                                    {{ field.errors|striptags }}
+                                </div>
+                            {% endif %}
+                            
+                            {% if field.help_text %}
+                                <p class="text-[10px] opacity-40 italic mt-1">{{ field.help_text }}</p>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+
+                    <div class="pt-8 flex flex-col sm:flex-row gap-4">
+                        <button type="submit" class="btn btn-primary flex-1 font-black italic uppercase text-lg shadow-lg">
+                            Confirm Transmission
+                        </button>
+                        <a href="javascript:history.back()" class="btn btn-ghost font-black italic uppercase">
+                            Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
 </div>
+
+<style>
+    /* Пряма стилізація всіх типів інпутів у формі */
+    input[type="text"], 
+    input[type="number"], 
+    input[type="password"], 
+    input[type="email"], 
+    textarea, 
+    select {
+        width: 100% !important;
+        background-color: #ffffff !important; /* Білий фон */
+        border: 2px solid #374151 !important; /* Темна чітка рамка */
+        border-radius: 8px !important;
+        padding: 12px 16px !important;
+        color: #111827 !important; /* Чорний текст */
+        font-weight: 600 !important;
+        font-size: 1rem !important;
+    }
+
+    input:focus, textarea:focus, select:focus {
+        outline: none !important;
+        border-color: hsl(var(--p)) !important;
+        box-shadow: 0 0 0 4px hsla(var(--p), 0.2) !important;
+    }
+
+    /* Стиль для чекбоксів (is_completed) */
+    input[type="checkbox"] {
+        width: 24px !important;
+        height: 24px !important;
+        cursor: pointer;
+    }
+</style>
 {% endblock %}

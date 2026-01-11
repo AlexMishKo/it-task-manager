@@ -1,10 +1,19 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="mb-6">
+<div class="mb-6 flex flex-col md:flex-row justify-between items-center gap-4">
     <a href="{% url 'manager:worker-list' %}" class="text-xs font-bold uppercase opacity-50 hover:opacity-100 transition-opacity">
         ← Back to unit roster
     </a>
+    
+    <div class="flex gap-2">
+        <a href="/admin/manager/worker/{{ worker.id }}/change/" class="btn btn-xs btn-outline font-black uppercase italic">
+            Edit (Admin)
+        </a>
+        <a href="{% url 'manager:worker-delete' worker.id %}" class="btn btn-xs btn-error btn-outline font-black uppercase italic">
+            Delete Worker
+        </a>
+    </div>
 </div>
 
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -16,61 +25,74 @@
                         <span class="text-3xl font-black">{{ worker.username|slice:":2"|upper }}</span>
                     </div>
                 </div>
-                <h1 class="text-2xl font-black italic uppercase tracking-tighter text-secondary">@{{ worker.username }}</h1>
-                <p class="text-xs font-bold opacity-50 uppercase tracking-widest mt-1">{{ worker.position.name|default:"Field Agent" }}</p>
+                <h1 class="text-2xl font-black italic uppercase tracking-tighter text-secondary">
+                    @{{ worker.username }}
+                </h1>
+                <p class="text-xs font-bold opacity-50 uppercase tracking-widest mt-1">
+                    {{ worker.position.name|default:"Field Agent" }}
+                </p>
             </div>
-            <div class="p-6 border-t border-base-200">
-                <div class="space-y-4">
-                    <div>
-                        <span class="text-[10px] font-black opacity-40 uppercase block mb-1">Full Name</span>
-                        <p class="font-bold italic">{{ worker.first_name }} {{ worker.last_name }}</p>
-                    </div>
+            
+            <div class="p-6 space-y-4">
+                <div>
+                    <span class="text-[10px] font-black opacity-40 uppercase block mb-1">Full Name</span>
+                    <p class="font-bold tracking-tight">{{ worker.first_name }} {{ worker.last_name }}</p>
+                </div>
+                <div class="divider my-0 opacity-20"></div>
+                <div>
+                    <span class="text-[10px] font-black opacity-40 uppercase block mb-1">Direct Assignment</span>
+                    <a href="{% url 'manager:task-create' %}?worker={{ worker.id }}" class="btn btn-sm btn-block btn-primary font-black uppercase italic mt-2">
+                        + Deploy Agent
+                    </a>
                 </div>
             </div>
         </div>
     </div>
 
     <div class="lg:col-span-2">
-        <div class="flex justify-between items-center mb-6 bg-base-200/30 p-4 rounded-xl border border-base-300">
-            <h2 class="text-2xl font-black italic uppercase tracking-tight">Current Missions <span class="badge badge-primary font-black ml-2">{{ all_missions.count }}</span></h2>
-            <a href="{% url 'manager:task-create' %}?worker={{ worker.id }}" class="btn btn-sm btn-secondary font-black uppercase italic px-6 shadow-lg">+ Deploy Agent</a>
-        </div>
-
-        <div class="overflow-x-auto bg-base-100 border border-base-300 rounded-xl shadow-lg">
-            <table class="table table-zebra w-full text-sm">
+        <div class="bg-base-100 border border-base-300 rounded-xl shadow-lg overflow-hidden">
+            <div class="p-4 bg-base-300/50 border-b border-base-300">
+                <h3 class="text-sm font-black uppercase tracking-widest">Mission History / Active Tasks</h3>
+            </div>
+            <table class="table w-full">
                 <thead>
-                    <tr class="bg-base-200 text-[10px] font-black uppercase tracking-widest opacity-60">
-                        <th>Operation</th>
-                        <th>Sector</th>
+                    <tr class="text-[10px] uppercase opacity-50">
+                        <th>Operation Name</th>
+                        <th>Project</th>
                         <th>Status</th>
-                        <th></th>
+                        <th class="text-right">Action</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody class="text-sm">
                     {% for task in all_missions %}
                     <tr class="hover:bg-base-200 transition-colors">
-                        <td>
-                            <div class="flex flex-col font-bold italic">{{ task.name }}</div>
-                            <span class="text-[9px] font-black opacity-50 uppercase">Prio: {{ task.priority }}</span>
-                        </td>
+                        <td class="font-bold italic tracking-tight">{{ task.name }}</td>
                         <td>
                             {% if task.project %}
-                            <a href="{% url 'manager:project-detail' task.project.id %}" class="text-primary hover:underline uppercase italic font-bold text-xs">{{ task.project.name }}</a>
+                                <a href="{% url 'manager:project-detail' task.project.id %}" class="text-xs font-bold text-primary hover:underline uppercase italic">
+                                    {{ task.project.name }}
+                                </a>
                             {% else %}
-                            <span class="opacity-30 italic text-xs">Independent</span>
+                                <span class="text-[10px] opacity-30 italic">Independent</span>
                             {% endif %}
                         </td>
                         <td>
-                            <span class="badge {% if task.is_completed %}badge-success{% else %}badge-warning{% endif %} badge-xs font-black uppercase">
-                                {% if task.is_completed %}Done{% else %}Active{% endif %}
-                            </span>
+                            {% if task.is_completed %}
+                                <span class="badge badge-success badge-xs font-black uppercase">Done</span>
+                            {% else %}
+                                <span class="badge badge-warning badge-xs font-black uppercase">Active</span>
+                            {% endif %}
                         </td>
                         <th class="text-right">
                             <a href="{% url 'manager:task-detail' task.id %}" class="btn btn-ghost btn-xs italic font-black uppercase">Details →</a>
                         </th>
                     </tr>
                     {% empty %}
-                    <tr><td colspan="4" class="text-center py-12 opacity-30 italic font-bold uppercase tracking-widest">No active missions detected.</td></tr>
+                    <tr>
+                        <td colspan="4" class="text-center py-12 opacity-30 italic font-bold uppercase tracking-widest">
+                            No active missions detected.
+                        </td>
+                    </tr>
                     {% endfor %}
                 </tbody>
             </table>

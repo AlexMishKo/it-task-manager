@@ -3,16 +3,21 @@
 {% block content %}
 <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
     <div>
-        <h1 class="text-3xl font-black italic uppercase tracking-tighter text-primary">
-            Active Projects
-        </h1>
+        <div class="flex items-center gap-4">
+            <h1 class="text-3xl font-black italic uppercase tracking-tighter text-primary">
+                Active Projects
+            </h1>
+            <a href="{% url 'manager:project-create' %}" class="btn btn-sm btn-primary italic font-black uppercase">
+                + Create Project
+            </a>
+        </div>
         <p class="text-base-content/60 text-sm italic">
             Strategic goals and product development.
         </p>
     </div>
-    
+
     <form method="get" class="join shadow-sm">
-        <input type="text" name="name" placeholder="Filter projects..." 
+        <input type="text" name="name" placeholder="Filter projects..."
                value="{{ search_name }}"
                class="input input-bordered join-item input-sm lg:input-md w-full focus:outline-none italic" />
         <button type="submit" class="btn join-item btn-sm lg:btn-md btn-primary italic font-black">Find</button>
@@ -64,12 +69,14 @@
 <div class="flex justify-center mt-12 mb-10">
     <div class="join shadow-lg">
         {% if page_obj.has_previous %}
-            <a href="?{% if search_name %}name={{ search_name }}&{% endif %}page={{ page_obj.previous_page_number }}" 
+            <a href="?{% if search_name %}name={{ search_name }}&{% endif %}page={{ page_obj.previous_page_number }}"
                class="join-item btn btn-md bg-base-100 italic">« Prev</a>
         {% endif %}
+        
         <button class="join-item btn btn-md btn-active font-black italic">Sector {{ page_obj.number }}</button>
+        
         {% if page_obj.has_next %}
-            <a href="?{% if search_name %}name={{ search_name }}&{% endif %}page={{ page_obj.next_page_number }}" 
+            <a href="?{% if search_name %}name={{ search_name }}&{% endif %}page={{ page_obj.next_page_number }}"
                class="join-item btn btn-md bg-base-100 italic">Next »</a>
         {% endif %}
     </div>
