@@ -1,6 +1,6 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.db.models import Q
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy, reverse
 from django.views import generic
 
@@ -18,8 +18,15 @@ def index(request):
     num_projects = Project.objects.count()
     num_teams = Team.objects.count()
 
-    num_critical_tasks = Task.objects.filter(priority__iexact="urgent", is_completed=False).count()
-    num_completed_tasks = Task.objects.filter(is_completed=True).count()
+    num_critical_tasks = Task.objects.filter(
+        priority__iexact="urgent",
+        is_completed=False
+    ).count()
+
+    my_tasks = Task.objects.filter(
+        assignees=request.user,
+        is_completed=False
+    ).select_related("project").order_by("deadline")[:5]
 
     context = {
         "num_workers": num_workers,
@@ -27,38 +34,34 @@ def index(request):
         "num_projects": num_projects,
         "num_teams": num_teams,
         "num_critical_tasks": num_critical_tasks,
-        "num_completed_tasks": num_completed_tasks,
+        "my_tasks": my_tasks,
     }
 
     return render(request, "manager/index.html", context=context)
 
 
+# --- TASK VIEWS ---
+
 class TaskListView(LoginRequiredMixin, generic.ListView):
     model = Task
     template_name = "manager/task_list.html"
     context_object_name = "task_list"
-    paginate_by = 5
+    paginate_by = 10
 
     def get_queryset(self):
-        queryset = Task.objects.select_related("project").prefetch_related("assignees")
+        queryset = Task.objects.select_related("task_type", "project")
         name = self.request.GET.get("name", "")
+
+        if name.lower() == "urgent":
+            return queryset.filter(priority__iexact="urgent", is_completed=False)
+
         if name:
             return queryset.filter(name__icontains=name)
         return queryset
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["search_name"] = self.request.GET.get("name", "")
-        return context
-
 
 class TaskDetailView(LoginRequiredMixin, generic.DetailView):
     model = Task
-    template_name = "manager/task_detail.html"
-    context_object_name = "task"
-
-    def get_queryset(self):
-        return Task.objects.select_related("project").prefetch_related("assignees", "team__workers")
 
 
 class TaskCreateView(LoginRequiredMixin, generic.CreateView):
@@ -72,7 +75,9 @@ class TaskUpdateView(LoginRequiredMixin, generic.UpdateView):
     model = Task
     form_class = TaskForm
     template_name = "manager/forms/task_form.html"
-    success_url = reverse_lazy("manager:task-list")
+
+    def get_success_url(self):
+        return reverse("manager:task-detail", kwargs={"pk": self.object.pk})
 
 
 class TaskDeleteView(LoginRequiredMixin, UserPassesTestMixin, generic.DeleteView):
@@ -84,46 +89,52 @@ class TaskDeleteView(LoginRequiredMixin, UserPassesTestMixin, generic.DeleteView
         return self.request.user.is_superuser
 
 
+def toggle_task_completion(request, pk):
+    task = get_object_or_404(Task, id=pk)
+    task.is_completed = not task.is_completed
+    task.save()
+    return redirect(request.META.get('HTTP_REFERER', 'manager:task-list'))
+
+
+# --- PROJECT VIEWS ---
+
 class ProjectListView(LoginRequiredMixin, generic.ListView):
     model = Project
-    template_name = "manager/project_list.html"
-    context_object_name = "project_list"
     paginate_by = 6
 
     def get_queryset(self):
-        queryset = Project.objects.all()
+        queryset = Project.objects.prefetch_related("teams__workers")
         name = self.request.GET.get("name", "")
         if name:
             return queryset.filter(name__icontains=name)
         return queryset
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["search_name"] = self.request.GET.get("name", "")
-        return context
-
 
 class ProjectDetailView(LoginRequiredMixin, generic.DetailView):
     model = Project
-    template_name = "manager/project_detail.html"
-    context_object_name = "project"
-
-    def get_queryset(self):
-        return Project.objects.prefetch_related("teams__workers", "tasks__assignees")
+    queryset = Project.objects.prefetch_related("teams__workers", "tasks")
 
 
-class ProjectCreateView(LoginRequiredMixin, generic.CreateView):
+class ProjectCreateView(LoginRequiredMixin, UserPassesTestMixin, generic.CreateView):
     model = Project
     fields = "__all__"
     template_name = "manager/forms/task_form.html"
     success_url = reverse_lazy("manager:project-list")
 
+    def test_func(self):
+        return self.request.user.is_superuser
 
-class ProjectUpdateView(LoginRequiredMixin, generic.UpdateView):
+
+class ProjectUpdateView(LoginRequiredMixin, UserPassesTestMixin, generic.UpdateView):
     model = Project
     fields = "__all__"
     template_name = "manager/forms/task_form.html"
-    success_url = reverse_lazy("manager:project-list")
+
+    def get_success_url(self):
+        return reverse("manager:project-detail", kwargs={"pk": self.object.pk})
+
+    def test_func(self):
+        return self.request.user.is_superuser
 
 
 class ProjectDeleteView(LoginRequiredMixin, UserPassesTestMixin, generic.DeleteView):
@@ -135,37 +146,37 @@ class ProjectDeleteView(LoginRequiredMixin, UserPassesTestMixin, generic.DeleteV
         return self.request.user.is_superuser
 
 
+# --- TEAM VIEWS ---
+
 class TeamListView(LoginRequiredMixin, generic.ListView):
     model = Team
-    template_name = "manager/team_list.html"
-    context_object_name = "team_list"
-    paginate_by = 5
-
-    def get_queryset(self):
-        return Team.objects.prefetch_related("workers", "projects")
+    paginate_by = 6
 
 
 class TeamDetailView(LoginRequiredMixin, generic.DetailView):
     model = Team
-    template_name = "manager/team_detail.html"
-    context_object_name = "team"
-
-    def get_queryset(self):
-        return Team.objects.prefetch_related("workers__position", "projects")
 
 
-class TeamCreateView(LoginRequiredMixin, generic.CreateView):
+class TeamCreateView(LoginRequiredMixin, UserPassesTestMixin, generic.CreateView):
     model = Team
     fields = "__all__"
     template_name = "manager/forms/task_form.html"
     success_url = reverse_lazy("manager:team-list")
 
+    def test_func(self):
+        return self.request.user.is_superuser
 
-class TeamUpdateView(LoginRequiredMixin, generic.UpdateView):
+
+class TeamUpdateView(LoginRequiredMixin, UserPassesTestMixin, generic.UpdateView):
     model = Team
     fields = "__all__"
     template_name = "manager/forms/task_form.html"
-    success_url = reverse_lazy("manager:team-list")
+
+    def get_success_url(self):
+        return reverse("manager:team-detail", kwargs={"pk": self.object.pk})
+
+    def test_func(self):
+        return self.request.user.is_superuser
 
 
 class TeamDeleteView(LoginRequiredMixin, UserPassesTestMixin, generic.DeleteView):
@@ -176,6 +187,8 @@ class TeamDeleteView(LoginRequiredMixin, UserPassesTestMixin, generic.DeleteView
     def test_func(self):
         return self.request.user.is_superuser
 
+
+# --- WORKER VIEWS ---
 
 class WorkerListView(LoginRequiredMixin, generic.ListView):
     model = Worker
@@ -194,8 +207,8 @@ class WorkerDetailView(LoginRequiredMixin, generic.DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["all_missions"] = Task.objects.filter(
-            Q(assignees=self.request.user) | Q(team__workers=self.request.user)
+        context["assigned_tasks"] = Task.objects.filter(
+            Q(assignees=self.object) | Q(team__workers=self.object)
         ).distinct().select_related("project")
         return context
 
