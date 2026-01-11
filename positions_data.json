@@ -1,0 +1,309 @@
+[
+  { "model": "manager.tasktype", "pk": 1, "fields": { "name": "Bug" } },
+  { "model": "manager.tasktype", "pk": 2, "fields": { "name": "Feature" } },
+  { "model": "manager.tasktype", "pk": 3, "fields": { "name": "Refactoring" } },
+  { "model": "manager.tasktype", "pk": 4, "fields": { "name": "Documentation" } },
+  { "model": "manager.tasktype", "pk": 5, "fields": { "name": "Testing" } },
+  { "model": "manager.tasktype", "pk": 6, "fields": { "name": "Deployment" } },
+  { "model": "manager.tasktype", "pk": 7, "fields": { "name": "Design" } },
+
+  { "model": "manager.tag", "pk": 1, "fields": { "name": "Backend" } },
+  { "model": "manager.tag", "pk": 2, "fields": { "name": "Frontend" } },
+  { "model": "manager.tag", "pk": 3, "fields": { "name": "High Priority" } },
+  { "model": "manager.tag", "pk": 4, "fields": { "name": "API" } },
+  { "model": "manager.tag", "pk": 5, "fields": { "name": "Database" } },
+  { "model": "manager.tag", "pk": 6, "fields": { "name": "Security" } },
+  { "model": "manager.tag", "pk": 7, "fields": { "name": "UI/UX" } },
+
+  { "model": "manager.position", "pk": 1, "fields": { "name": "Python Developer" } },
+  { "model": "manager.position", "pk": 2, "fields": { "name": "Project Manager" } },
+  { "model": "manager.position", "pk": 3, "fields": { "name": "QA Engineer" } },
+  { "model": "manager.position", "pk": 4, "fields": { "name": "DevOps Engineer" } },
+  { "model": "manager.position", "pk": 5, "fields": { "name": "UI/UX Designer" } },
+  { "model": "manager.position", "pk": 6, "fields": { "name": "Frontend Developer" } },
+  { "model": "manager.position", "pk": 7, "fields": { "name": "Fullstack Developer" } },
+  { "model": "manager.position", "pk": 8, "fields": { "name": "Data Scientist" } },
+  { "model": "manager.position", "pk": 9, "fields": { "name": "Business Analyst" } },
+  { "model": "manager.position", "pk": 10, "fields": { "name": "System Administrator" } },
+  { "model": "manager.position", "pk": 11, "fields": { "name": "Mobile Developer (iOS/Android)" } },
+  { "model": "manager.position", "pk": 12, "fields": { "name": "Team Lead" } },
+  { "model": "manager.position", "pk": 13, "fields": { "name": "Security Specialist" } },
+  { "model": "manager.position", "pk": 14, "fields": { "name": "Database Administrator" } },
+  { "model": "manager.position", "pk": 15, "fields": { "name": "HR Manager" } },
+  {
+    "model": "manager.project",
+    "pk": 1,
+    "fields": {
+      "name": "E-commerce Platform",
+      "description": "Developing a high-load online store with microservices architecture.",
+      "teams": []
+    }
+  },
+  {
+    "model": "manager.project",
+    "pk": 2,
+    "fields": {
+      "name": "Mobile Banking App",
+      "description": "Secure mobile application for financial transactions and budget tracking.",
+      "teams": []
+    }
+  },
+  {
+    "model": "manager.project",
+    "pk": 3,
+    "fields": {
+      "name": "AI Content Generator",
+      "description": "A tool that uses machine learning to help creators generate marketing copy.",
+      "teams": []
+    }
+  },
+  {
+    "model": "manager.project",
+    "pk": 4,
+    "fields": {
+      "name": "Internal HR Portal",
+      "description": "System for tracking employee vacations, benefits, and performance reviews.",
+      "teams": []
+    }
+  },
+  {
+    "model": "manager.task",
+    "pk": 1,
+    "fields": {
+      "name": "Implement JWT Authentication",
+      "description": "Develop secure login and logout functionality using JSON Web Tokens.",
+      "project": 1,
+      "team": 1,
+      "task_type": 2,
+      "priority": "High",
+      "deadline": "2026-01-10",
+      "is_completed": false,
+      "tags": [1, 4],
+      "assignees": []
+    }
+  },
+  {
+    "model": "manager.task",
+    "pk": 2,
+    "fields": {
+      "name": "Fix Password Reset Bug",
+      "description": "The password reset link expires too early. Investigate the token timeout settings.",
+      "project": 1,
+      "team": 1,
+      "task_type": 1,
+      "priority": "Urgent",
+      "deadline": "2025-12-28",
+      "is_completed": false,
+      "tags": [2],
+      "assignees": []
+    }
+  },
+  {
+    "model": "manager.task",
+    "pk": 3,
+    "fields": {
+      "name": "Design Homepage Wireframes",
+      "description": "Create low-fidelity wireframes for the new landing page focused on conversion.",
+      "project": 2,
+      "team": 2,
+      "task_type": 7,
+      "priority": "Medium",
+      "deadline": "2026-01-05",
+      "is_completed": false,
+      "tags": [7],
+      "assignees": []
+    }
+  },
+  {
+    "model": "manager.task",
+    "pk": 4,
+    "fields": {
+      "name": "Database Query Optimization",
+      "description": "Solo Task: Analyze and rewrite slow SQL queries in the analytics module.",
+      "project": 1,
+      "team": null,
+      "task_type": 3,
+      "priority": "High",
+      "deadline": "2026-01-15",
+      "is_completed": false,
+      "tags": [5],
+      "assignees": [1]
+    }
+  },
+  {
+    "model": "manager.task",
+    "pk": 5,
+    "fields": {
+      "name": "Configure Docker Staging Environment",
+      "description": "Update docker-compose files and environment variables for the staging server.",
+      "project": 3,
+      "team": 4,
+      "task_type": 6,
+      "priority": "Medium",
+      "deadline": "2026-01-20",
+      "is_completed": false,
+      "tags": [3],
+      "assignees": []
+    }
+  },
+  {
+    "model": "manager.task",
+    "pk": 6,
+    "fields": {
+      "name": "Refactor User Profile Logic",
+      "description": "Clean up the legacy code in user profiles to follow DRY principles.",
+      "project": 1,
+      "team": 1,
+      "task_type": 3,
+      "priority": "Low",
+      "deadline": "2026-02-01",
+      "is_completed": false,
+      "tags": [1],
+      "assignees": []
+    }
+  },
+  {
+    "model": "manager.task",
+    "pk": 7,
+    "fields": {
+      "name": "Conduct Security Pentest",
+      "description": "Run automated and manual security scans to find XSS and SQL injection vulnerabilities.",
+      "project": 3,
+      "team": 3,
+      "task_type": 5,
+      "priority": "Urgent",
+      "deadline": "2025-12-31",
+      "is_completed": false,
+      "tags": [6],
+      "assignees": []
+    }
+  },
+  {
+    "model": "manager.task",
+    "pk": 8,
+    "fields": {
+      "name": "Write API Documentation",
+      "description": "Solo Task: Complete the Swagger/OpenAPI documentation for the billing service.",
+      "project": 4,
+      "team": null,
+      "task_type": 4,
+      "priority": "Medium",
+      "deadline": "2026-01-12",
+      "is_completed": false,
+      "tags": [4],
+      "assignees": [10]
+    }
+  },
+  {
+    "model": "manager.task",
+    "pk": 9,
+    "fields": {
+      "name": "Migrate Data to AWS S3",
+      "description": "Move all static assets and user uploads from local storage to S3 buckets.",
+      "project": 3,
+      "team": 4,
+      "task_type": 2,
+      "priority": "High",
+      "deadline": "2026-01-25",
+      "is_completed": false,
+      "tags": [3, 5],
+      "assignees": []
+    }
+  },
+  {
+    "model": "manager.task",
+    "pk": 10,
+    "fields": {
+      "name": "Implement Dark Mode UI",
+      "description": "Add CSS variables and theme toggler for the Dark Mode feature.",
+      "project": 2,
+      "team": 2,
+      "task_type": 2,
+      "priority": "Low",
+      "deadline": "2026-01-18",
+      "is_completed": false,
+      "tags": [7, 2],
+      "assignees": []
+    }
+  },
+  {
+    "model": "manager.task",
+    "pk": 11,
+    "fields": {
+      "name": "Fix Checkout Crash",
+      "description": "Solo Task: Resolve a critical null pointer exception occurring during guest checkout.",
+      "project": 4,
+      "team": null,
+      "task_type": 1,
+      "priority": "Urgent",
+      "deadline": "2025-12-27",
+      "is_completed": false,
+      "tags": [2],
+      "assignees": [4]
+    }
+  },
+  {
+    "model": "manager.task",
+    "pk": 12,
+    "fields": {
+      "name": "Integrate Stripe Payments",
+      "description": "Implement Stripe API for processing subscription payments and refunds.",
+      "project": 4,
+      "team": 1,
+      "task_type": 2,
+      "priority": "High",
+      "deadline": "2026-01-30",
+      "is_completed": false,
+      "tags": [1, 5],
+      "assignees": []
+    }
+  },
+  {
+    "model": "manager.task",
+    "pk": 13,
+    "fields": {
+      "name": "Analyze User Feedback",
+      "description": "Solo Task: Review last month's support tickets and group them by feature requests.",
+      "project": 2,
+      "team": null,
+      "task_type": 4,
+      "priority": "Low",
+      "deadline": "2026-01-08",
+      "is_completed": false,
+      "tags": [4],
+      "assignees": [12]
+    }
+  },
+  {
+    "model": "manager.task",
+    "pk": 14,
+    "fields": {
+      "name": "Prepare Alpha Release Notes",
+      "description": "Compile a list of all features and known issues for the upcoming Alpha version.",
+      "project": 3,
+      "team": 1,
+      "task_type": 4,
+      "priority": "Medium",
+      "deadline": "2026-01-02",
+      "is_completed": true,
+      "tags": [4],
+      "assignees": []
+    }
+  },
+  {
+    "model": "manager.task",
+    "pk": 15,
+    "fields": {
+      "name": "Setup Error Tracking",
+      "description": "Integrate Sentry to monitor backend exceptions in real-time.",
+      "project": 1,
+      "team": 4,
+      "task_type": 6,
+      "priority": "High",
+      "deadline": "2026-01-03",
+      "is_completed": false,
+      "tags": [3],
+      "assignees": []
+    }
+  }
+]

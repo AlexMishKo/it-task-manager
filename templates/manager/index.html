@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="mb-10">
+    <h1 class="text-4xl font-black uppercase tracking-tight text-base-content">
+        System <span class="text-primary">Dashboard</span>
+    </h1>
+    <p class="opacity-50 font-medium italic">Welcome, {{ user.username }}. Overview of current projects and tasks.</p>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-10">
+    <div class="bg-base-100 p-6 rounded-2xl border border-base-300 shadow-sm">
+        <div class="text-xs font-black uppercase opacity-40 mb-1">Total Projects</div>
+        <div class="text-3xl font-black text-primary">{{ num_projects }}</div>
+    </div>
+    <div class="bg-base-100 p-6 rounded-2xl border border-base-300 shadow-sm">
+        <div class="text-xs font-black uppercase opacity-40 mb-1">Active Tasks</div>
+        <div class="text-3xl font-black text-secondary">{{ num_tasks }}</div>
+    </div>
+    <div class="bg-base-100 p-6 rounded-2xl border border-base-300 shadow-sm">
+        <div class="text-xs font-black uppercase opacity-40 mb-1">Total Teams</div>
+        <div class="text-3xl font-black">{{ num_teams }}</div>
+    </div>
+    <div class="bg-base-100 p-6 rounded-2xl border border-base-300 shadow-sm">
+        <div class="text-xs font-black uppercase opacity-40 mb-1">Workers</div>
+        <div class="text-3xl font-black">{{ num_workers }}</div>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <div class="lg:col-span-2 space-y-6">
+
+        <div class="bg-base-100 rounded-2xl border border-base-300 shadow-xl overflow-hidden">
+            <div class="p-5 border-b border-base-200 bg-base-200/50 flex justify-between items-center">
+                <h3 class="font-black uppercase text-sm tracking-widest">My Active Tasks</h3>
+                <a href="{% url 'manager:task-list' %}" class="text-[10px] font-bold uppercase link link-primary">View All</a>
+            </div>
+            <div class="divide-y divide-base-200">
+                {% for task in my_tasks %}
+                <div class="p-4 flex items-center justify-between hover:bg-base-200/30 transition-colors">
+                    <div class="flex items-center gap-4">
+                        <a href="{% url 'manager:task-toggle-complete' task.id %}" class="inline-block transition-transform active:scale-90">
+                            {% if task.is_completed %}
+                                <div class="w-6 h-6 rounded-full bg-success flex items-center justify-center text-success-content shadow-sm shadow-success/40">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                    </svg>
+                                </div>
+                            {% else %}
+                                <div class="w-6 h-6 rounded-full border-2 border-base-300 hover:border-primary transition-colors"></div>
+                            {% endif %}
+                        </a>
+                        <div>
+                            <div class="font-bold text-sm uppercase italic">{{ task.name }}</div>
+                            <div class="text-[10px] opacity-50 font-bold uppercase">{{ task.project.name|default:"General" }}</div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <span class="text-[10px] font-black opacity-40 italic">{{ task.deadline|date:"d M" }}</span>
+                        <a href="{% url 'manager:task-detail' task.id %}" class="btn btn-xs btn-ghost border-base-300 font-black uppercase">Open</a>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="p-10 text-center opacity-30 italic text-sm font-bold uppercase">No tasks assigned to you.</div>
+                {% endfor %}
+            </div>
+        </div>
+
+        {% if num_critical_tasks > 0 %}
+        <div class="alert shadow-lg border-l-8 border-error bg-base-100 p-6">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-error shrink-0 w-8 h-8"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+            <div>
+                <h3 class="font-black uppercase italic text-lg leading-none">Attention!</h3>
+                <div class="text-xs font-bold opacity-60 uppercase mt-1">There are {{ num_critical_tasks }} uncompleted urgent tasks.</div>
+            </div>
+            <a href="{% url 'manager:task-list' %}?name=urgent" class="btn btn-error btn-sm font-black uppercase italic shadow-md">
+                View Critical
+            </a>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="space-y-6">
+        <div class="card bg-primary text-primary-content shadow-xl">
+            <div class="card-body">
+                <h2 class="card-title font-black uppercase italic tracking-tighter text-2xl">Actions</h2>
+                <div class="flex flex-col gap-2 mt-4">
+                    <a href="{% url 'manager:task-create' %}" class="btn btn-sm bg-white/20 border-none text-white font-black uppercase italic hover:bg-white/40">+ New Task</a>
+                    <a href="{% url 'manager:project-list' %}" class="btn btn-sm bg-white/20 border-none text-white font-black uppercase italic hover:bg-white/40">Projects</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-base-100 p-6 rounded-2xl border border-base-300 shadow-sm text-center">
+            <h3 class="font-black uppercase text-xs tracking-widest opacity-40 mb-2">System Status</h3>
+            <div class="flex items-center justify-center gap-2">
+                <div class="badge badge-success badge-xs"></div>
+                <span class="text-[10px] font-black uppercase">Online</span>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

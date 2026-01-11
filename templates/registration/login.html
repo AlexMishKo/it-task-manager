@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-md mx-auto mt-20">
+    <div class="card bg-base-100 shadow-2xl border border-base-300">
+        <div class="card-body">
+            <h2 class="card-title text-3xl font-black uppercase italic italic tracking-tighter text-primary mb-4">
+                System Access
+            </h2>
+            
+            <form method="post" class="space-y-4">
+                {% csrf_token %}
+                
+                <div class="form-control">
+                    <label class="label font-bold uppercase text-[10px] opacity-60">Username</label>
+                    <input type="text" name="username" class="input input-bordered w-full italic" required>
+                </div>
+
+                <div class="form-control">
+                    <label class="label font-bold uppercase text-[10px] opacity-60">Password</label>
+                    <input type="password" name="password" class="input input-bordered w-full italic" required>
+                </div>
+
+                <div class="card-actions mt-6">
+                    <button type="submit" class="btn btn-primary btn-block font-black uppercase italic">
+                        Authorize →
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

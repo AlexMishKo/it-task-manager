@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="mb-8 flex justify-between items-start">
+    <div>
+        <h1 class="text-4xl font-black italic uppercase tracking-tighter text-secondary leading-none">
+            Team: {{ team.name }}
+        </h1>
+        <p class="opacity-50 font-bold uppercase text-xs mt-2">Team Detail</p>
+    </div>
+    {% if user.is_superuser %}
+    <div class="flex gap-2">
+        <a href="{% url 'manager:team-update' team.id %}" class="btn btn-sm btn-outline font-black uppercase italic">Edit Team</a>
+        <a href="{% url 'manager:team-delete' team.id %}" class="btn btn-sm btn-error btn-outline font-black uppercase italic">Delete Team</a>
+    </div>
+    {% endif %}
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <div class="bg-base-100 border border-base-300 rounded-xl p-6 shadow-lg">
+        <h3 class="text-sm font-black uppercase tracking-widest mb-6 border-b border-base-200 pb-2">Assigned Personnel</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {% for member in team.workers.all %}
+            <div class="card bg-base-200 border border-base-300 p-4">
+                <div class="flex items-center gap-3">
+                    <div class="avatar placeholder">
+                        <div class="bg-primary text-primary-content rounded-full w-10 font-black uppercase">
+                            {{ member.username|slice:":3" }}
+                        </div>
+                    </div>
+                    <div>
+                        <a href="{% url 'manager:worker-detail' member.id %}" class="font-black italic uppercase text-xs hover:text-primary transition-colors">@{{ member.username }}</a>
+                        <p class="text-[10px] font-bold opacity-50 uppercase">{{ member.position.name }}</p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="bg-base-100 border border-base-300 rounded-xl p-6 shadow-lg">
+        <h3 class="text-sm font-black uppercase tracking-widest mb-4 border-b border-base-200 pb-2">Active Projects</h3>
+        <div class="space-y-4">
+            {% for project in team.projects.all %}
+            <div class="flex justify-between items-center group">
+                <span class="font-black italic text-lg uppercase tracking-tight group-hover:text-primary transition-colors">{{ project.name }}</span>
+                <a href="{% url 'manager:project-detail' project.id %}" class="btn btn-xs btn-outline btn-primary uppercase font-black italic">Data</a>
+            </div>
+            {% empty %}
+            <p class="italic opacity-30 text-xs uppercase">No active projects assigned to this team.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<div class="mt-8">
+    <a href="{% url 'manager:team-list' %}" class="text-xs font-black uppercase italic opacity-50 hover:opacity-100 transition-opacity">← Back to Teams</a>
+</div>
+{% endblock %}
