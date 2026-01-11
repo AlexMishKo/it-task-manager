@@ -14,7 +14,7 @@
                         <div class="flex flex-wrap gap-2 mb-3">
                             <span class="badge badge-primary font-bold italic uppercase">{{ task.task_type.name }}</span>
                             <span class="badge {% if task.is_completed %}badge-success{% else %}badge-warning{% endif %} font-bold italic uppercase">
-                                {% if task.is_completed %}Mission Accomplished{% else %}In Progress{% endif %}
+                                {% if task.is_completed %}Task completed{% else %}In Progress{% endif %}
                             </span>
                         </div>
                         <h1 class="text-4xl font-black italic uppercase tracking-tighter text-secondary leading-tight">
@@ -31,9 +31,9 @@
             </div>
 
             <div class="p-8 border-b border-base-300">
-                <p class="text-[10px] font-bold opacity-40 uppercase tracking-[0.2em] mb-4 text-center">Objective Description</p>
+                <p class="text-[10px] font-bold opacity-40 uppercase tracking-[0.2em] mb-4 text-center">Description</p>
                 <p class="text-lg text-center italic leading-relaxed opacity-80 max-w-2xl mx-auto">
-                    {{ task.description|default:"No detailed intelligence provided for this operation." }}
+                    {{ task.description|default:"No detailed description provided for this task." }}
                 </p>
             </div>
 
@@ -41,15 +41,15 @@
                 <div class="p-8 border-b md:border-b-0 md:border-r border-base-300 bg-base-50">
                     <h3 class="text-xs font-black uppercase tracking-[0.2em] text-primary mb-6 flex items-center gap-2">
                         <span class="w-2 h-2 bg-primary rounded-full"></span>
-                        Deployed Personnel
+                        Assigned personnel
                     </h3>
-                    
+
                     <div class="space-y-6">
                         <div class="bg-white p-4 rounded-lg border border-base-300 shadow-sm">
-                            <p class="text-[10px] font-bold opacity-50 uppercase mb-2">Tactical Unit</p>
-                            <span class="text-sm font-black italic text-secondary uppercase">
-                                {{ task.team.name|default:"No Unit Assigned" }}
-                            </span>
+                            <p class="text-[10px] font-bold opacity-50 uppercase mb-2">Team</p>
+                            <a href="{% url 'manager:team-detail' pk=task.team.id %}" class="text-sm font-black italic text-secondary uppercase hover:text-primary transition-colors">
+                                {{ task.team.name|default:"No Team Assigned" }}
+                            </a>
                         </div>
 
                         <div class="bg-white p-4 rounded-lg border border-base-300 shadow-sm">
@@ -70,7 +70,7 @@
                 <div class="p-8 bg-base-200/10">
                     <div class="space-y-8 text-center md:text-left">
                         <div>
-                            <p class="text-[10px] font-bold opacity-40 uppercase tracking-widest mb-1">Sector</p>
+                            <p class="text-[10px] font-bold opacity-40 uppercase tracking-widest mb-1">Project</p>
                             <a href="{% url 'manager:project-detail' pk=task.project.id %}" class="text-xl font-black italic uppercase text-secondary hover:text-primary transition-colors">
                                 {{ task.project.name }}
                             </a>

@@ -13,7 +13,7 @@
             Project: {{ project.name }}
         </h1>
     </div>
-    
+
     {% if user.is_superuser %}
     <div class="flex gap-2">
         <a href="{% url 'manager:project-update' project.id %}" class="btn btn-sm btn-outline font-black uppercase italic">
@@ -34,11 +34,11 @@
         </div>
 
         <div class="bg-base-100 p-6 rounded-lg border border-base-300 shadow-sm">
-            <h3 class="text-xs font-black opacity-50 uppercase tracking-widest mb-4">Assigned Tactical Units</h3>
+            <h3 class="text-xs font-black opacity-50 uppercase tracking-widest mb-4">Assigned Team(s)</h3>
             <div class="space-y-4">
                 {% for team in project.teams.all %}
                 <div class="collapse collapse-arrow bg-base-200 border border-base-300">
-                    <input type="checkbox" checked /> 
+                    <input type="checkbox" checked />
                     <div class="collapse-title font-bold text-sm uppercase italic">
                         {{ team.name }}
                     </div>
@@ -47,8 +47,8 @@
                             {% for worker in team.workers.all %}
                             <a href="{% url 'manager:worker-detail' worker.id %}" class="flex items-center gap-2 p-2 bg-base-100 rounded-md hover:text-primary transition-colors border border-transparent hover:border-primary/30">
                                 <div class="avatar placeholder">
-                                    <div class="bg-neutral text-neutral-content rounded-full w-6 text-[10px] font-black uppercase">
-                                        {{ worker.username|slice:":2" }}
+                                    <div class="bg-primary text-primary-content rounded-full w-6 text-[10px] font-black uppercase">
+                                        {{ worker.username|slice:":3" }}
                                     </div>
                                 </div>
                                 <span class="text-xs font-bold italic">@{{ worker.username }}</span>
@@ -67,7 +67,7 @@
     <div class="lg:col-span-2">
         <div class="bg-base-100 rounded-xl border border-base-300 shadow-2xl overflow-hidden">
             <div class="p-4 bg-base-200 border-b border-base-300 flex justify-between items-center">
-                <h3 class="font-black uppercase italic text-sm tracking-tight">Mission Backlog</h3>
+                <h3 class="font-black uppercase italic text-sm tracking-tight">Task Backlog</h3>
                 <span class="badge badge-primary badge-sm font-bold">{{ project.tasks.count }} TASKS</span>
             </div>
             <div class="divide-y divide-base-200">
@@ -78,12 +78,12 @@
                             <span class="font-black italic uppercase tracking-tight {% if task.is_completed %}line-through opacity-40 text-success{% endif %}">
                                 {{ task.name }}
                             </span>
-                            <span class="badge badge-xs font-black uppercase 
+                            <span class="badge badge-xs font-black uppercase
                                 {% if task.priority == 'urgent' %}badge-error{% elif task.priority == 'high' %}badge-warning{% else %}badge-ghost{% endif %}">
                                 {{ task.priority }}
                             </span>
                         </div>
-                        <div class="text-[10px] opacity-50 uppercase mt-1 font-bold">                            
+                        <div class="text-[10px] opacity-50 uppercase mt-1 font-bold">
                             Deadline: {{ task.deadline|date:"M. d, Y" }} | Team: {{ task.team.name|default:"Unassigned" }}
                         </div>
                     </div>

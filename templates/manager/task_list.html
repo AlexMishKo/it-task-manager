@@ -30,47 +30,65 @@
     </div>
 </div>
 
-<div class="bg-base-100 border border-base-300 rounded-xl overflow-hidden shadow-2xl">
+<div class="bg-base-100 border border-base-300 rounded-2xl overflow-hidden shadow-sm">
     <table class="table table-zebra w-full">
-        <thead class="bg-base-200">
-            <tr class="text-[10px] font-black uppercase tracking-widest opacity-60">
-                <th class="w-10">Status</th>
-                <th>Task Name</th>
+        <thead class="bg-base-200/50">
+            <tr class="text-[10px] uppercase tracking-widest opacity-50">
+                <th class="w-12 text-center">Status</th>
+                <th>Operation</th>
                 <th>Project</th>
-                <th>Type</th>
                 <th>Priority</th>
+                <th>Deadline</th>
                 <th class="text-right">Action</th>
             </tr>
         </thead>
-        <tbody class="font-bold">
+        <tbody>
             {% for task in task_list %}
-            <tr class="hover:bg-base-200/50 transition-colors group">
-                <td>
-                    <a href="{% url 'manager:task-toggle-complete' task.id %}" 
-                       class="btn btn-xs btn-circle {% if task.is_completed %}btn-success text-white{% else %}btn-outline opacity-30 hover:opacity-100{% endif %}"
-                       title="Toggle Status">
-                        ✓
+            <tr class="hover:bg-base-200/30 transition-colors group">
+                <td class="text-center">
+                    <a href="{% url 'manager:task-toggle-complete' pk=task.id %}" class="inline-block transition-transform active:scale-90">
+                        {% if task.is_completed %}
+                            <div class="w-6 h-6 rounded-full bg-success flex items-center justify-center text-success-content shadow-sm shadow-success/40">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                        {% else %}
+                            <div class="w-6 h-6 rounded-full border-2 border-base-300 hover:border-primary transition-colors"></div>
+                        {% endif %}
                     </a>
                 </td>
                 <td>
-                    <div class="{% if task.is_completed %}line-through opacity-30 italic{% endif %}">
+                    <div class="font-black italic uppercase tracking-tight {% if task.is_completed %}line-through opacity-30{% endif %}">
                         {{ task.name }}
                     </div>
+                    <div class="flex flex-wrap gap-1 mt-1">
+                        {% for tag in task.tags.all %}
+                        <a href="?name=%23{{ tag.name }}" class="text-[8px] font-bold px-1 bg-base-300 hover:bg-primary hover:text-white transition-colors rounded uppercase">
+                            #{{ tag.name }}
+                        </a>
+                        {% endfor %}
+                    </div>
                 </td>
-                <td class="text-xs uppercase opacity-60 italic">{{ task.project.name|default:"-" }}</td>
                 <td>
-                    <span class="badge badge-sm font-black italic uppercase">{{ task.task_type.name }}</span>
+                    <span class="badge badge-ghost badge-sm font-bold uppercase italic">{{ task.project.name|default:"---" }}</span>
                 </td>
                 <td>
-                    <span class="badge badge-sm font-black italic uppercase 
-                        {% if task.priority == 'urgent' %}badge-error shadow-sm shadow-error/50
-                        {% elif task.priority == 'high' %}badge-warning
-                        {% else %}badge-ghost opacity-50{% endif %}">
+                    <span class="text-[10px] font-black uppercase italic 
+                        {% if task.priority == 'urgent' %}text-error animate-pulse
+                        {% elif task.priority == 'high' %}text-warning
+                        {% elif task.priority == 'medium' %}text-info
+                        {% else %}text-base-content/40{% endif %}">
                         {{ task.priority }}
                     </span>
                 </td>
+                <td>
+                    <span class="text-[11px] font-mono {% if not task.is_completed and task.deadline < today %}text-error font-bold{% endif %}">
+                        {{ task.deadline|date:"d M Y" }}
+                    </span>
+                </td>
                 <td class="text-right">
-                    <a href="{% url 'manager:task-detail' pk=task.id %}" class="btn btn-ghost btn-xs italic font-black uppercase group-hover:text-primary">
+                    <a href="{% url 'manager:task-detail' pk=task.id %}" class="btn btn-ghost btn-xs font-black italic uppercase text-primary group-hover:text-primary">
                         Details
                     </a>
                 </td>

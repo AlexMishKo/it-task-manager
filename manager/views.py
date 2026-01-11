@@ -49,13 +49,16 @@ class TaskListView(LoginRequiredMixin, generic.ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        queryset = Task.objects.select_related("task_type", "project")
+        queryset = Task.objects.select_related("task_type", "project").prefetch_related("tags")
         name = self.request.GET.get("name", "")
 
         if name.lower() == "urgent":
             return queryset.filter(priority__iexact="urgent", is_completed=False)
 
         if name:
+            if name.startswith("#"):
+                tag_name = name[1:]
+                return queryset.filter(tags__name__icontains=tag_name)
             return queryset.filter(name__icontains=name)
         return queryset
 
@@ -255,4 +258,3 @@ class WorkerDeleteView(LoginRequiredMixin, UserPassesTestMixin, generic.DeleteVi
 
     def test_func(self):
         return self.request.user.is_superuser
-

@@ -8,13 +8,13 @@
                 Teams
             </h1>
             {% if user.is_superuser %}
-            <a href="{% url 'manager:team-create' %}" class="btn btn-sm btn-primary font-black uppercase">
-                + Create New Team
+            <a href="{% url 'manager:team-create' %}" class="btn btn-sm btn-primary italic font-black uppercase">
+                + Form New Team
             </a>
             {% endif %}
         </div>
         <p class="text-base-content/60 text-sm italic">
-            Management of departments and working groups.
+            Current team distribution and personnel roster.
         </p>
     </div>
 </div>
@@ -28,22 +28,22 @@
                     <h2 class="card-title text-2xl font-black italic uppercase tracking-tight text-secondary">
                         {{ team.name }}
                     </h2>
-                    <div class="badge badge-outline font-bold text-[10px] opacity-50 uppercase">ID: {{ team.id|stringformat:"03d" }}</div>
+                    <div class="badge badge-outline font-bold text-[10px] opacity-50 uppercase">Team ID: {{ team.id|stringformat:"03d" }}</div>
                 </div>
                 
                 <div class="space-y-4">
-                    <div class="collapse collapse-arrow bg-base-200 border border-base-300 rounded-lg">
+                    <div class="collapse collapse-arrow bg-base-200 border border-base-300">
                         <input type="checkbox" /> 
                         <div class="collapse-title text-xs font-black uppercase italic flex items-center gap-2">
-                            👥 Team Members ({{ team.workers.count }})
+                            👥 View Personnel ({{ team.workers.count }})
                         </div>
                         <div class="collapse-content">
                             <div class="grid grid-cols-1 gap-2 mt-2">
                                 {% for worker in team.workers.all %}
-                                <a href="{% url 'manager:worker-detail' worker.id %}" class="flex items-center gap-2 p-2 bg-base-100 rounded-md hover:text-primary transition-colors border border-transparent hover:border-primary/20">
+                                <a href="{% url 'manager:worker-detail' worker.id %}" class="flex items-center gap-2 p-2 bg-base-100 rounded-md hover:text-primary transition-colors">
                                     <div class="avatar placeholder">
-                                        <div class="bg-neutral text-neutral-content rounded-full w-6 text-[10px] font-black uppercase">
-                                            {{ worker.username|slice:":2" }}
+                                        <div class="bg-primary text-primary-content rounded-full w-6 text-[10px] font-black uppercase">
+                                            {{ worker.username|slice:":3" }}
                                         </div>
                                     </div>
                                     <span class="text-xs font-bold">@{{ worker.username }}</span>
@@ -54,28 +54,37 @@
                         </div>
                     </div>
 
-                    <div class="flex flex-wrap gap-2">
-                        {% for project in team.projects.all %}
-                        <span class="text-[10px] font-black uppercase text-primary bg-primary/10 px-2 py-1 rounded">
-                            {{ project.name }}
-                        </span>
-                        {% empty %}
-                        <span class="text-xs italic opacity-30 uppercase font-bold">No projects assigned</span>
-                        {% endfor %}
+                    <div class="space-y-2">
+                        <div class="flex items-center gap-2">
+                            <span class="relative flex h-2 w-2">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                            </span>
+                            <span class="text-[10px] font-black uppercase italic opacity-50 tracking-widest">Working on project(s):</span>
+                        </div>
+                        <div class="flex flex-wrap gap-2">
+                            {% for project in team.projects.all %}
+                            <a href="{% url 'manager:project-detail' pk=project.id %}" class="text-[10px] font-black uppercase italic text-primary bg-primary/10 px-2 py-1 rounded hover:bg-primary hover:text-white transition-all border border-primary/20">
+                                {{ project.name }}
+                            </a>
+                            {% empty %}
+                            <span class="text-xs italic opacity-30 uppercase font-bold px-2">Unassigned</span>
+                            {% endfor %}
+                        </div>
                     </div>
                 </div>
             </div>
 
             <div class="card-actions justify-end p-4 bg-base-200/50 border-t border-base-300">
                 <a href="{% url 'manager:team-detail' pk=team.id %}" class="btn btn-sm btn-ghost font-black italic uppercase tracking-tighter group-hover:text-primary">
-                    View Team Details →
+                    Full Team Data →
                 </a>
             </div>
         </div>
     </div>
     {% empty %}
     <div class="col-span-full text-center py-20 bg-base-100 rounded-box border-2 border-dashed border-base-300">
-        <p class="text-xl font-bold opacity-30 italic uppercase">No teams found in the system.</p>
+        <p class="text-xl font-bold opacity-30 italic uppercase">No teams currently available.</p>
     </div>
     {% endfor %}
 </div>

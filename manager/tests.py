@@ -2,7 +2,7 @@ from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
 
-from manager.forms import TaskForm
+from manager.forms.task_form import TaskForm
 from manager.forms.worker_form import WorkerCreationForm
 from manager.models import (Position,
                             TaskType,
@@ -58,6 +58,10 @@ class ModelTests(TestCase):
         self.assertEqual(task.priority, "urgent")
         self.assertFalse(task.is_completed)
 
+    def test_tag_str(self):
+        tag = Tag.objects.create(name="Backend")
+        self.assertEqual(str(tag), "Backend")
+
 
 class ViewTests(TestCase):
 
@@ -75,6 +79,8 @@ class ViewTests(TestCase):
 
         self.task_type = TaskType.objects.create(name="Feature")
         self.project = Project.objects.create(name="Test Project")
+        self.tag = Tag.objects.create(name="urgent_tag")
+
         self.task = Task.objects.create(
             name="Test Task",
             task_type=self.task_type,
@@ -82,51 +88,51 @@ class ViewTests(TestCase):
             deadline=timezone.now().date(),
             priority="medium"
         )
+        self.task.tags.add(self.tag)
 
     def test_dashboard_access_logged_in(self):
-
         self.client.login(username="worker.user", password="workerpassword123")
         response = self.client.get(reverse("manager:index"))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "manager/index.html")
 
     def test_task_list_search_by_name(self):
-
         self.client.login(username="worker.user", password="workerpassword123")
         url = reverse("manager:task-list")
-
         response = self.client.get(url, {"name": "Test"})
         self.assertContains(response, "Test Task")
-
-
         response = self.client.get(url, {"name": "Missing"})
         self.assertNotContains(response, "Test Task")
 
-    def test_toggle_task_completion_logic(self):
+    def test_task_list_search_by_tag_with_hash(self):
+        self.client.login(username="worker.user", password="workerpassword123")
+        url = reverse("manager:task-list")
+        response = self.client.get(url, {"name": "#urgent_tag"})
+        self.assertContains(response, "Test Task")
 
+    def test_task_list_search_by_tag_not_found(self):
+        self.client.login(username="worker.user", password="workerpassword123")
+        url = reverse("manager:task-list")
+        response = self.client.get(url, {"name": "#nonexistent"})
+        self.assertNotContains(response, "Test Task")
+
+    def test_toggle_task_completion_logic(self):
         self.client.login(username="worker.user", password="workerpassword123")
         url = reverse("manager:task-toggle-complete", kwargs={"pk": self.task.id})
-
         response = self.client.get(url)
         self.assertEqual(response.status_code, 302)
-
         self.task.refresh_from_db()
         self.assertTrue(self.task.is_completed)
 
     def test_worker_cannot_delete_project(self):
-
         self.client.login(username="worker.user", password="workerpassword123")
         url = reverse("manager:project-delete", kwargs={"pk": self.project.id})
-
         response = self.client.get(url)
-
         self.assertEqual(response.status_code, 403)
 
     def test_admin_can_delete_project(self):
-
         self.client.login(username="admin.user", password="adminpassword123")
         url = reverse("manager:project-delete", kwargs={"pk": self.project.id})
-
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
@@ -160,15 +166,15 @@ class FormTests(TestCase):
         self.assertTrue(form.is_valid())
 
     def test_task_form_invalid_deadline(self):
-
         form = TaskForm(data={})
         self.assertFalse(form.is_valid())
         self.assertIn("deadline", form.errors)
 
     def test_task_form_deadline_widget_type(self):
         form = TaskForm()
-
-        self.assertEqual(form.fields["deadline"].widget.input_type, "date")
+        widget = form.fields["deadline"].widget
+        input_type = getattr(widget, 'input_type', widget.attrs.get('type'))
+        self.assertEqual(input_type, "date")
 
     def test_worker_form_css_classes(self):
         form = WorkerCreationForm()

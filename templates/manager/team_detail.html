@@ -6,7 +6,7 @@
         <h1 class="text-4xl font-black italic uppercase tracking-tighter text-secondary leading-none">
             Team: {{ team.name }}
         </h1>
-        <p class="opacity-50 font-bold uppercase text-xs mt-2">Tactical Group Detail</p>
+        <p class="opacity-50 font-bold uppercase text-xs mt-2">Team Detail</p>
     </div>
     {% if user.is_superuser %}
     <div class="flex gap-2">
@@ -21,11 +21,11 @@
         <h3 class="text-sm font-black uppercase tracking-widest mb-6 border-b border-base-200 pb-2">Assigned Personnel</h3>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             {% for member in team.workers.all %}
-            <div class="card bg-base-200 border border-base-300 shadow-sm">
-                <div class="card-body p-4 flex flex-row items-center gap-4">
+            <div class="card bg-base-200 border border-base-300 p-4">
+                <div class="flex items-center gap-3">
                     <div class="avatar placeholder">
-                        <div class="bg-neutral text-neutral-content rounded-full w-10 font-black uppercase">
-                            {{ member.username|slice:":2" }}
+                        <div class="bg-primary text-primary-content rounded-full w-10 font-black uppercase">
+                            {{ member.username|slice:":3" }}
                         </div>
                     </div>
                     <div>
@@ -47,9 +47,13 @@
                 <a href="{% url 'manager:project-detail' project.id %}" class="btn btn-xs btn-outline btn-primary uppercase font-black italic">Data</a>
             </div>
             {% empty %}
-            <p class="italic opacity-30 text-xs uppercase">No active projects assigned to this unit.</p>
+            <p class="italic opacity-30 text-xs uppercase">No active projects assigned to this team.</p>
             {% endfor %}
         </div>
     </div>
+</div>
+
+<div class="mt-8">
+    <a href="{% url 'manager:team-list' %}" class="text-xs font-black uppercase italic opacity-50 hover:opacity-100 transition-opacity">← Back to Teams</a>
 </div>
 {% endblock %}

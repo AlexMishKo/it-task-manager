@@ -43,7 +43,7 @@
                     <div class="flex flex-col gap-2">
                         {% for team in project.teams.all %}
                         <div class="collapse collapse-arrow bg-base-200 border border-base-300 rounded-lg">
-                            <input type="checkbox" /> 
+                            <input type="checkbox" />
                             <div class="collapse-title text-xs font-black uppercase italic min-h-0 py-2">
                                 🛡️ {{ team.name }}
                             </div>
@@ -52,8 +52,8 @@
                                     {% for worker in team.workers.all %}
                                     <a href="{% url 'manager:worker-detail' worker.id %}" class="flex items-center gap-2 p-1 hover:bg-base-100 rounded transition-colors">
                                         <div class="avatar placeholder">
-                                            <div class="bg-neutral text-neutral-content rounded-full w-5 text-[8px] font-black uppercase">
-                                                {{ worker.username|slice:":2" }}
+                                            <div class="bg-primary text-primary-content rounded-full w-5 text-[8px] font-black uppercase">
+                                                {{ worker.username|slice:":3" }}
                                             </div>
                                         </div>
                                         <span class="text-[10px] font-bold">@{{ worker.username }}</span>

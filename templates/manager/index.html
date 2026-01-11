@@ -39,10 +39,16 @@
                 {% for task in my_tasks %}
                 <div class="p-4 flex items-center justify-between hover:bg-base-200/30 transition-colors">
                     <div class="flex items-center gap-4">
-                        <a href="{% url 'manager:task-toggle-complete' task.id %}"
-                           class="btn btn-xs btn-circle btn-outline border-base-300 hover:btn-success"
-                           title="Toggle Status">
-                            ✓
+                        <a href="{% url 'manager:task-toggle-complete' task.id %}" class="inline-block transition-transform active:scale-90">
+                            {% if task.is_completed %}
+                                <div class="w-6 h-6 rounded-full bg-success flex items-center justify-center text-success-content shadow-sm shadow-success/40">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                    </svg>
+                                </div>
+                            {% else %}
+                                <div class="w-6 h-6 rounded-full border-2 border-base-300 hover:border-primary transition-colors"></div>
+                            {% endif %}
                         </a>
                         <div>
                             <div class="font-bold text-sm uppercase italic">{{ task.name }}</div>
