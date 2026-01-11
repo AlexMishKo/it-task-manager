@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="mb-8">
+    <div class="text-sm breadcrumbs opacity-50 uppercase font-bold mb-2">
+        <ul>
+            <li><a href="{% url 'manager:project-list' %}">Projects</a></li>
+            <li>Sector: {{ project.name }}</li>
+        </ul>
+    </div>
+    <h1 class="text-4xl font-black italic uppercase tracking-tighter text-primary">
+        Project: {{ project.name }}
+    </h1>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <div class="lg:col-span-1 space-y-6">
+        <div class="bg-base-200 p-6 rounded-lg border-l-4 border-primary shadow-md">
+            <h3 class="text-xs font-black opacity-50 uppercase tracking-widest mb-2 text-secondary">Objective Description</h3>
+            <p class="text-sm leading-relaxed italic">
+                {{ project.description|default:"No strategic description provided for this sector." }}
+            </p>
+        </div>
+
+        <div>
+            <h3 class="text-xs font-black opacity-50 uppercase tracking-widest mb-4">Assigned Units (Teams)</h3>
+            <div class="space-y-3">
+                {% for team in project.teams.all %}
+                <div class="collapse collapse-arrow bg-base-100 border border-base-300 shadow-sm">
+                    <input type="radio" name="teams-accordion" /> 
+                    <div class="collapse-title font-bold italic uppercase text-sm">
+                        {{ team.name }}
+                    </div>
+                    <div class="collapse-content">
+                        <div class="flex flex-wrap gap-2 mt-2">
+                            {% for worker in team.workers.all %}
+                            <a href="{% url 'manager:worker-detail' worker.id %}" class="badge badge-outline badge-sm font-bold">@{{ worker.username }}</a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <p class="text-xs opacity-40 italic uppercase">No units deployed to this sector.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div class="lg:col-span-2">
+        <div class="bg-base-100 border border-base-300 rounded-xl overflow-hidden shadow-xl">
+            <div class="p-4 bg-base-300/50 border-b border-base-300 flex justify-between items-center">
+                <h3 class="text-sm font-black uppercase tracking-widest">Active Operations (Tasks)</h3>
+                <span class="badge badge-primary font-black">{{ project.tasks.count }} Total</span>
+            </div>
+            <div class="divide-y divide-base-300">
+                {% for task in project.tasks.all %}
+                <div class="p-4 hover:bg-base-200 transition-colors flex justify-between items-center group">
+                    <div>
+                        <div class="flex items-center gap-3">
+                            <span class="text-lg font-bold italic tracking-tight {% if task.is_completed %}line-through opacity-40 text-success{% endif %}">
+                                {{ task.name }}
+                            </span>
+                            <span class="badge badge-xs font-black uppercase 
+                                {% if task.priority == 'urgent' %}badge-error
+                                {% elif task.priority == 'high' %}badge-warning
+                                {% elif task.priority == 'medium' %}badge-info
+                                {% else %}badge-ghost{% endif %}">
+                                {{ task.priority }}
+                            </span>
+                        </div>
+                        <div class="text-[10px] opacity-50 uppercase mt-1 font-bold">                            
+                            Deadline: {{ task.deadline|date:"Y-m-d" }} | Assigned Unit: {{ task.team.name|default:"Unassigned" }}
+                        </div>
+                    </div>
+                    <a href="{% url 'manager:task-detail' task.id %}" class="btn btn-sm btn-ghost btn-square group-hover:text-primary">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                    </a>
+                </div>
+                {% empty %}
+                <div class="p-10 text-center opacity-30 italic font-bold uppercase tracking-widest">
+                    No active operations found in this sector.
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

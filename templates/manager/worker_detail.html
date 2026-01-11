@@ -1,125 +1,120 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="max-w-5xl mx-auto">
-    <div class="mb-6">
-        <a href="{% url 'manager:worker-list' %}" class="btn btn-ghost btn-xs font-black text-primary uppercase tracking-tighter">
-            ← Back to Team
-        </a>
-    </div>
+<div class="mb-6">
+    <a href="{% url 'manager:worker-list' %}" class="text-xs font-bold uppercase opacity-50 hover:opacity-100 transition-opacity">
+        ← Back to unit roster
+    </a>
+</div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div class="space-y-6">
-            <div class="card bg-base-100 shadow-xl border border-base-300">
-                <div class="card-body items-center text-center">
-                    <div class="avatar placeholder mb-4">
-                        <div class="bg-primary text-primary-content rounded-full w-24 ring ring-primary ring-offset-base-100 ring-offset-2">
-                            <span class="text-3xl font-black">{{ worker.username|slice:":2"|upper }}</span>
-                        </div>
-                    </div>
-                    <h2 class="text-2xl font-black italic uppercase tracking-tighter text-secondary">@{{ worker.username }}</h2>
-                    <p class="text-[10px] font-bold opacity-40 uppercase tracking-[0.2em] mb-4">
-                        {{ worker.position|default:"Specialist" }}
-                    </p>
-                    
-                    <div class="divider uppercase text-[10px] opacity-20 font-black">Agent Info</div>
-                    
-                    <div class="w-full text-left space-y-3">
-                        <div class="flex justify-between items-center">
-                            <span class="text-[11px] font-bold opacity-50 uppercase italic">Full Name:</span>
-                            <span class="text-xs font-extrabold uppercase">{{ worker.first_name }} {{ worker.last_name }}</span>
-                        </div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <div class="lg:col-span-1 space-y-6">
+        <div class="bg-base-100 border border-base-300 rounded-xl overflow-hidden shadow-xl">
+            <div class="p-8 text-center bg-gradient-to-b from-base-200 to-base-100">
+                <div class="avatar placeholder mb-4">
+                    <div class="bg-primary text-primary-content rounded-full w-24 ring ring-primary ring-offset-base-100 ring-offset-2">
+                        <span class="text-3xl font-black">{{ worker.username|slice:":2"|upper }}</span>
                     </div>
                 </div>
+                <h1 class="text-2xl font-black italic uppercase tracking-tighter text-secondary">
+                    @{{ worker.username }}
+                </h1>
+                <p class="text-xs font-bold opacity-50 uppercase tracking-widest mt-1">
+                    {{ worker.position.name|default:"Field Agent" }}
+                </p>
             </div>
-
-            <div class="card bg-base-100 shadow-xl border border-base-300">
-                <div class="card-body">
-                    <h3 class="text-[10px] uppercase font-bold opacity-40 tracking-[0.2em] mb-4 text-center">Team Identity</h3>
-                    
-                    {% if worker.team %}
-                        <div class="flex flex-col items-center gap-3">
-                            <div class="text-lg font-black italic uppercase text-primary tracking-tighter">
-                                {{ worker.team.name }}
-                            </div>
-                            
-                            <div class="divider h-1 opacity-10"></div>
-                            
-                            <div class="w-full">
-                                <span class="text-[10px] font-bold opacity-50 uppercase italic mb-2 block text-center">Team Projects:</span>
-                                <div class="flex flex-wrap justify-center gap-2">
-                                    {% for project in worker.team.projects.all %}
-                                        <span class="badge badge-outline border-base-300 text-[10px] font-black py-3 uppercase tracking-tighter italic shadow-sm">
-                                            🚀 {{ project.name }}
-                                        </span>
-                                    {% empty %}
-                                        <span class="text-[10px] italic opacity-40 uppercase">No active projects</span>
-                                    {% endfor %}
-                                </div>
-                            </div>
-                        </div>
-                    {% else %}
-                        <div class="text-center py-4">
-                            <span class="badge badge-ghost font-bold text-[10px] opacity-50 uppercase">No Team Assigned</span>
-                        </div>
-                    {% endif %}
+            
+            <div class="p-6 border-t border-base-200">
+                <div class="space-y-4">
+                    <div>
+                        <span class="text-[10px] font-black opacity-40 uppercase block mb-1">Full Name</span>
+                        <p class="font-bold italic">{{ worker.first_name }} {{ worker.last_name }}</p>
+                    </div>
+                    <div>
+                        <span class="text-[10px] font-black opacity-40 uppercase block mb-1">Email Dispatch</span>
+                        <p class="text-sm">{{ worker.email|default:"No email secured" }}</p>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="lg:col-span-2 space-y-6">
-            <h3 class="text-xl font-black italic uppercase tracking-tighter text-primary flex items-center gap-2">
-                Personal Missions 
-                <div class="badge badge-primary font-black italic">{{ worker.tasks.count }}</div>
-            </h3>
-
-            <div class="overflow-x-auto bg-base-100 rounded-box shadow-2xl border border-base-300">
-                <table class="table w-full">
-                    <thead class="bg-base-200/50">
-                        <tr class="text-[10px] uppercase font-black text-base-content/70">
-                            <th>Task</th>
-                            <th>Project</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-base-200">
-                        {% for task in worker.tasks.all %}
-                        <tr class="hover:bg-base-200/30 transition-colors text-sm">
-                            <td>
-                                <a href="{% url 'manager:task-detail' pk=task.id %}" class="hover:text-primary transition-colors">
-                                    <div class="font-extrabold">{{ task.name }}</div>
-                                </a>
-                                <div class="text-[9px] uppercase font-bold opacity-40 italic">{{ task.task_type.name }}</div>
-                            </td>
-                            <td>
-                                <span class="badge badge-ghost border-base-300 text-[10px] font-bold py-3 uppercase tracking-tighter italic">
-                                    {{ task.project.name|default:"Internal" }}
-                                </span>
-                            </td>
-                            <td>
-                                {% if task.is_completed %}
-                                    <span class="text-success font-black text-[10px] italic uppercase tracking-widest">Done</span>
-                                {% else %}
-                                    <div class="flex items-center gap-2">
-                                        <span class="relative flex h-2 w-2">
-                                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-info opacity-75"></span>
-                                            <span class="relative inline-flex rounded-full h-2 w-2 bg-info"></span>
-                                        </span>
-                                        <span class="text-[10px] font-black italic text-info uppercase tracking-widest">Active</span>
-                                    </div>
-                                {% endif %}
-                            </td>
-                        </tr>
-                        {% empty %}
-                        <tr>
-                            <td colspan="3" class="text-center py-10 opacity-30 italic font-bold">
-                                No active missions for this agent.
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+        <div class="bg-base-100 border border-base-300 rounded-xl p-6 shadow-md">
+            <h3 class="text-xs font-black opacity-50 uppercase tracking-widest mb-4 text-center">Team Identity</h3>
+            <div class="flex flex-wrap gap-2 justify-center">
+                {% for team in worker.teams.all %}
+                    {# Посилання на деталі команди #}
+                    <a href="{% url 'manager:team-detail' team.id %}" 
+                       class="badge badge-secondary badge-lg font-black italic uppercase p-4 hover:scale-105 transition-transform">
+                        {{ team.name }}
+                    </a>
+                {% empty %}
+                    <div class="text-center py-4 opacity-30 italic text-sm border-2 border-dashed border-base-300 w-full rounded-lg">
+                        NO TEAM ASSIGNED
+                    </div>
+                {% endfor %}
             </div>
+        </div>
+    </div>
+
+    <div class="lg:col-span-2">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-black italic uppercase tracking-tight">
+                Current Missions 
+                <span class="ml-2 badge badge-primary font-black">{{ all_missions.count }}</span>
+            </h2>
+        </div>
+
+        <div class="overflow-x-auto bg-base-100 border border-base-300 rounded-xl shadow-lg">
+            <table class="table table-zebra w-full">
+                <thead>
+                    <tr class="bg-base-200 text-[10px] font-black uppercase tracking-widest opacity-60">
+                        <th>Operation</th>
+                        <th>Sector</th>
+                        <th>Status</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {# Використовуємо all_missions з контексту (який ми налаштували у views.py) #}
+                    {% for task in all_missions %}
+                    <tr class="hover:bg-base-200/50 transition-colors">
+                        <td>
+                            <div class="flex flex-col">
+                                <span class="font-bold italic">{{ task.name }}</span>
+                                <div class="flex gap-2 items-center mt-1">
+                                    <span class="text-[9px] font-black opacity-50 uppercase">Prio: {{ task.priority }}</span>
+                                    {# Мітка для командних завдань #}
+                                    {% if worker not in task.assignees.all %}
+                                        <span class="badge badge-xs badge-secondary font-black text-[8px] uppercase">Team Mission</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <a href="{% url 'manager:project-detail' task.project.id %}" class="text-xs font-bold text-primary hover:underline uppercase italic">
+                                {{ task.project.name|default:"Independent" }}
+                            </a>
+                        </td>
+                        <td>
+                            {% if task.is_completed %}
+                                <span class="badge badge-success badge-xs font-black uppercase">Done</span>
+                            {% else %}
+                                <span class="badge badge-warning badge-xs font-black uppercase">Active</span>
+                            {% endif %}
+                        </td>
+                        <th class="text-right">
+                            <a href="{% url 'manager:task-detail' task.id %}" class="btn btn-ghost btn-xs italic font-black uppercase">Details →</a>
+                        </th>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="text-center py-12 opacity-30 italic font-bold uppercase tracking-widest">
+                            No active missions detected.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
     </div>
 </div>

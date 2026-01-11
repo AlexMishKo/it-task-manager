@@ -14,40 +14,40 @@
     <form method="get" class="join shadow-sm">
         <input type="text" name="name" placeholder="Filter projects..." 
                value="{{ search_name }}"
-               class="input input-bordered join-item input-sm lg:input-md w-full focus:outline-none" />
-        <button type="submit" class="btn join-item btn-sm lg:btn-md btn-primary italic">Find</button>
+               class="input input-bordered join-item input-sm lg:input-md w-full focus:outline-none italic" />
+        <button type="submit" class="btn join-item btn-sm lg:btn-md btn-primary italic font-black">Find</button>
     </form>
 </div>
 
 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
     {% for project in project_list %}
-    <div class="card bg-base-100 shadow-xl border border-base-300 overflow-hidden group">
+    <div class="card bg-base-100 shadow-xl border border-base-300 overflow-hidden group hover:border-primary transition-all">
         <div class="card-body p-0">
             <div class="p-6">
                 <div class="flex justify-between items-start mb-2">
-                    <h2 class="card-title text-2xl font-black tracking-tight text-secondary">
+                    <h2 class="card-title text-2xl font-black tracking-tight text-secondary uppercase italic">
                         {{ project.name }}
                     </h2>
                     <div class="badge badge-secondary font-bold">{{ project.tasks.count }} Tasks</div>
                 </div>
-                <p class="text-sm opacity-70 line-clamp-2 min-h-[3rem]">
-                    {{ project.description|default:"No description provided for this project." }}
+                <p class="text-sm opacity-70 line-clamp-2 min-h-[3rem] italic">
+                    {{ project.description|default:"No strategic data provided." }}
                 </p>
             </div>
 
             <div class="bg-base-200/50 p-4 border-t border-base-300">
-                <p class="text-[10px] uppercase font-bold opacity-50 mb-2 tracking-widest">Involved Teams</p>
+                <p class="text-[10px] uppercase font-bold opacity-50 mb-2 tracking-widest">Involved Units (Teams)</p>
                 <div class="flex flex-wrap gap-2">
                     {% for team in project.teams.all %}
-                        <span class="badge badge-neutral badge-sm font-semibold italic">{{ team.name }}</span>
+                        <span class="badge badge-neutral badge-sm font-bold italic">{{ team.name }}</span>
                     {% empty %}
-                        <span class="text-xs opacity-40">No teams assigned yet</span>
+                        <span class="text-[10px] opacity-30 italic uppercase">No units deployed</span>
                     {% endfor %}
                 </div>
             </div>
 
-            <div class="card-actions justify-end p-4 bg-base-100">
-                <a href="#" class="btn btn-sm btn-ghost text-primary font-black italic">
+            <div class="card-actions justify-end p-4 bg-base-100 border-t border-base-200">
+                <a href="{% url 'manager:project-detail' pk=project.id %}" class="btn btn-sm btn-ghost text-primary font-black italic uppercase group-hover:bg-primary group-hover:text-primary-content transition-colors">
                     Project details →
                 </a>
             </div>
@@ -55,7 +55,7 @@
     </div>
     {% empty %}
     <div class="col-span-full text-center py-20 bg-base-100 rounded-box border-2 border-dashed border-base-300">
-        <p class="text-xl font-bold opacity-30 italic">No projects found. Create your first mission!</p>
+        <p class="text-xl font-bold opacity-30 italic uppercase text-uppercase">Intelligence reports no active projects.</p>
     </div>
     {% endfor %}
 </div>
@@ -65,14 +65,12 @@
     <div class="join shadow-lg">
         {% if page_obj.has_previous %}
             <a href="?{% if search_name %}name={{ search_name }}&{% endif %}page={{ page_obj.previous_page_number }}" 
-               class="join-item btn btn-md bg-base-100">«</a>
+               class="join-item btn btn-md bg-base-100 italic">« Prev</a>
         {% endif %}
-        <button class="join-item btn btn-md btn-active font-black">
-            {{ page_obj.number }}
-        </button>
+        <button class="join-item btn btn-md btn-active font-black italic">Sector {{ page_obj.number }}</button>
         {% if page_obj.has_next %}
             <a href="?{% if search_name %}name={{ search_name }}&{% endif %}page={{ page_obj.next_page_number }}" 
-               class="join-item btn btn-md bg-base-100">»</a>
+               class="join-item btn btn-md bg-base-100 italic">Next »</a>
         {% endif %}
     </div>
 </div>

@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="mb-8">
+    <h1 class="text-4xl font-black italic uppercase tracking-tighter text-secondary">
+        Unit: {{ team.name }}
+    </h1>
+    <p class="opacity-50 font-bold uppercase text-xs">Tactical Group Detail</p>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <div class="bg-base-100 border border-base-300 rounded-xl p-6 shadow-lg">
+        <h3 class="text-sm font-black uppercase tracking-widest mb-4 border-b border-base-200 pb-2">Assigned Personnel</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {% for member in team.workers.all %}
+            <a href="{% url 'manager:worker-detail' member.id %}" class="flex items-center gap-3 p-2 hover:bg-base-200 rounded-lg group">
+                <div class="avatar placeholder">
+                    <div class="bg-neutral text-neutral-content rounded-full w-8 font-black">
+                        {{ member.username|slice:":2"|upper }}
+                    </div>
+                </div>
+                <div>
+                    <div class="font-bold group-hover:text-primary">@{{ member.username }}</div>
+                    <div class="text-[10px] opacity-50 uppercase">{{ member.position.name }}</div>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="bg-base-100 border border-base-300 rounded-xl p-6 shadow-lg">
+        <h3 class="text-sm font-black uppercase tracking-widest mb-4 border-b border-base-200 pb-2">Current Sectors (Projects)</h3>
+        <div class="space-y-4">
+            {% for project in team.projects.all %}
+            <div class="flex justify-between items-center">
+                <span class="font-black italic text-lg uppercase tracking-tight">{{ project.name }}</span>
+                <a href="{% url 'manager:project-detail' project.id %}" class="btn btn-xs btn-outline btn-primary">Sector Data</a>
+            </div>
+            {% empty %}
+            <p class="italic opacity-30">No active sector assignments.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

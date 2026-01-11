@@ -1,3 +1,4 @@
+from django.db.models import Q
 from django.shortcuts import render
 from django.views import generic
 from .models import (
@@ -95,6 +96,15 @@ class WorkerDetailView(generic.DetailView):
             "teams__projects"
         )
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        worker = self.object
+        all_missions = Task.objects.filter(
+            Q(assignees=worker) | Q(team__in=worker.teams.all())
+        ).distinct().select_related("project", "task_type")
+        context["all_missions"] = all_missions
+        return context
+
 
 class ProjectListView(generic.ListView):
     model = Project
@@ -115,6 +125,18 @@ class ProjectListView(generic.ListView):
         return context
 
 
+class ProjectDetailView(generic.DetailView):
+    model = Project
+    template_name = "manager/project_detail.html"
+    context_object_name = "project"
+
+    def get_queryset(self):
+        return Project.objects.prefetch_related(
+            "teams__workers",
+            "tasks__assignees",
+        )
+
+
 class TeamListView(generic.ListView):
     model = Team
     template_name = "manager/team_list.html"
@@ -124,6 +146,26 @@ class TeamListView(generic.ListView):
     def get_queryset(self):
         return Team.objects.prefetch_related("workers", "projects")
 
+
+class TeamDetailView(generic.DetailView):
+    model = Team
+    template_name = "manager/team_detail.html"
+    context_object_name = "team"
+
+    def get_queryset(self):
+        return Team.objects.prefetch_related(
+            "workers__position",
+            "projects"
+        )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        team = self.object
+
+        context["team_tasks"] = Task.objects.filter(team=team).select_related(
+            "project", "task_type"
+        )
+        return context
 
 
 
