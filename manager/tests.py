@@ -1,12 +1,16 @@
 from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
+
+from manager.forms import TaskForm
+from manager.forms.worker_form import WorkerCreationForm
 from manager.models import (Position,
                             TaskType,
                             Worker,
                             Team,
                             Project,
-                            Task)
+                            Task,
+                            Tag)
 import datetime
 
 
@@ -125,3 +129,48 @@ class ViewTests(TestCase):
 
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
+
+
+class FormTests(TestCase):
+
+    def setUp(self):
+        self.position = Position.objects.create(name="Designer")
+        self.task_type = TaskType.objects.create(name="UI")
+        self.project = Project.objects.create(name="Web Design")
+        self.tag = Tag.objects.create(name="Experimental")
+
+    def test_worker_creation_form_fields(self):
+        form = WorkerCreationForm()
+        self.assertIn("position", form.fields)
+        self.assertIn("first_name", form.fields)
+
+    def test_task_form_valid(self):
+        deadline = timezone.now().date() + datetime.timedelta(days=5)
+        form_data = {
+            "name": "Design Logo",
+            "description": "Create a new brand logo",
+            "deadline": deadline,
+            "priority": "high",
+            "task_type": self.task_type.id,
+            "project": self.project.id,
+            "tags": [self.tag.id],
+            "is_completed": False,
+        }
+        form = TaskForm(data=form_data)
+        self.assertTrue(form.is_valid())
+
+    def test_task_form_invalid_deadline(self):
+
+        form = TaskForm(data={})
+        self.assertFalse(form.is_valid())
+        self.assertIn("deadline", form.errors)
+
+    def test_task_form_deadline_widget_type(self):
+        form = TaskForm()
+
+        self.assertEqual(form.fields["deadline"].widget.input_type, "date")
+
+    def test_worker_form_css_classes(self):
+        form = WorkerCreationForm()
+        username_class = form.fields["username"].widget.attrs.get("class")
+        self.assertIn("input-bordered", username_class)
