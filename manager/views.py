@@ -236,3 +236,4 @@ class WorkerDeleteView(LoginRequiredMixin, UserPassesTestMixin, generic.DeleteVi
 
     def test_func(self):
         return self.request.user.is_superuser
+

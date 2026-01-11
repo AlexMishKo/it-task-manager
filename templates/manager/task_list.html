@@ -7,7 +7,7 @@
             Task Backlog
         </h1>
         <p class="text-xs font-bold opacity-50 uppercase tracking-widest italic">
-            Tracking {{ paginator.count }} active missions.
+            Tracking {{ paginator.count }} active tasks.
         </p>
     </div>
 
@@ -24,7 +24,7 @@
         
         {% if user.is_superuser %}
         <a href="{% url 'manager:task-create' %}" class="btn btn-secondary btn-sm font-black uppercase italic px-4 shadow-lg border-2">
-            + New Deployment
+            + New Task
         </a>
         {% endif %}
     </div>
@@ -33,42 +33,44 @@
 <div class="bg-base-100 border border-base-300 rounded-xl overflow-hidden shadow-2xl">
     <table class="table table-zebra w-full">
         <thead class="bg-base-200">
-            <tr class="text-[11px] uppercase font-black opacity-50 italic">
-                <th>Task ID</th>
-                <th>Objective</th>
+            <tr class="text-[10px] font-black uppercase tracking-widest opacity-60">
+                <th class="w-10">Status</th>
+                <th>Task Name</th>
                 <th>Project</th>
+                <th>Type</th>
                 <th>Priority</th>
-                <th>Status</th>
                 <th class="text-right">Action</th>
             </tr>
         </thead>
-        <tbody>
+        <tbody class="font-bold">
             {% for task in task_list %}
-            <tr class="hover:bg-primary/5 transition-colors">
-                <td class="font-mono text-xs opacity-50">#{{ task.id|stringformat:"04d" }}</td>
+            <tr class="hover:bg-base-200/50 transition-colors group">
                 <td>
-                    <div class="font-black italic uppercase tracking-tight">
+                    <a href="{% url 'manager:task-toggle-complete' task.id %}" 
+                       class="btn btn-xs btn-circle {% if task.is_completed %}btn-success text-white{% else %}btn-outline opacity-30 hover:opacity-100{% endif %}"
+                       title="Toggle Status">
+                        ✓
+                    </a>
+                </td>
+                <td>
+                    <div class="{% if task.is_completed %}line-through opacity-30 italic{% endif %}">
                         {{ task.name }}
                     </div>
                 </td>
+                <td class="text-xs uppercase opacity-60 italic">{{ task.project.name|default:"-" }}</td>
                 <td>
-                    <span class="badge badge-outline badge-xs uppercase font-bold text-[9px]">{{ task.project.name }}</span>
+                    <span class="badge badge-sm font-black italic uppercase">{{ task.task_type.name }}</span>
                 </td>
                 <td>
-                    <div class="badge badge-sm font-black uppercase italic 
-                        {% if task.priority == 'urgent' %}badge-error shadow-error/20 shadow-lg{% elif task.priority == 'high' %}badge-warning{% else %}badge-ghost{% endif %}">
+                    <span class="badge badge-sm font-black italic uppercase 
+                        {% if task.priority == 'urgent' %}badge-error shadow-sm shadow-error/50
+                        {% elif task.priority == 'high' %}badge-warning
+                        {% else %}badge-ghost opacity-50{% endif %}">
                         {{ task.priority }}
-                    </div>
-                </td>
-                <td>
-                    {% if task.is_completed %}
-                        <span class="text-success font-black text-xs italic uppercase">✓ Done</span>
-                    {% else %}
-                        <span class="text-warning font-black text-xs italic uppercase animate-pulse">● Active</span>
-                    {% endif %}
+                    </span>
                 </td>
                 <td class="text-right">
-                    <a href="{% url 'manager:task-detail' pk=task.id %}" class="btn btn-ghost btn-xs font-black italic uppercase text-primary">
+                    <a href="{% url 'manager:task-detail' pk=task.id %}" class="btn btn-ghost btn-xs italic font-black uppercase group-hover:text-primary">
                         Details
                     </a>
                 </td>
@@ -78,7 +80,7 @@
                 <td colspan="6" class="text-center py-20">
                     <div class="flex flex-col items-center opacity-20">
                         <span class="text-6xl mb-4">📡</span>
-                        <p class="font-black italic uppercase tracking-[0.3em]">No active signals found</p>
+                        <p class="font-black italic uppercase tracking-[0.3em]">No tasks found</p>
                     </div>
                 </td>
             </tr>
