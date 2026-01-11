@@ -47,17 +47,21 @@
                     <div class="space-y-6">
                         <div class="bg-white p-4 rounded-lg border border-base-300 shadow-sm">
                             <p class="text-[10px] font-bold opacity-50 uppercase mb-2">Team</p>
-                            <a href="{% url 'manager:team-detail' pk=task.team.id %}" class="text-sm font-black italic text-secondary uppercase hover:text-primary transition-colors">
-                                {{ task.team.name|default:"No Team Assigned" }}
-                            </a>
+                            {% if task.team %}
+                                <a href="{% url 'manager:team-detail' pk=task.team.id %}" class="text-sm font-black italic text-secondary uppercase hover:text-primary transition-colors">
+                                    {{ task.team.name }}
+                                </a>
+                            {% else %}
+                                <span class="text-sm font-black italic text-secondary uppercase opacity-40">No Team Assigned</span>
+                            {% endif %}
                         </div>
 
                         <div class="bg-white p-4 rounded-lg border border-base-300 shadow-sm">
                             <p class="text-[10px] font-bold opacity-50 uppercase mb-3">Individual Assignment</p>
                             <div class="flex flex-wrap gap-2">
                                 {% for worker in task.assignees.all %}
-                                    <a href="{% url 'manager:worker-detail' pk=worker.id %}" class="badge badge-neutral font-bold py-3 px-4 hover:badge-primary transition-all">
-                                        @{{ worker.username }}
+                                    <a href="{% url 'manager:worker-detail' pk=worker.id %}" class="badge badge-primary font-bold py-3 px-4 hover:badge-primary transition-all">
+                                        {{ worker.username|slice:":3" }}
                                     </a>
                                 {% empty %}
                                     <span class="text-xs italic opacity-40 uppercase font-bold">No individual leads</span>
