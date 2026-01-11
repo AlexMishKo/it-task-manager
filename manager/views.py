@@ -17,7 +17,7 @@ def index(request):
     num_teams = Team.objects.count()
 
     #advanced statistics
-    num_critical_tasks = Task.objects.filter(priority="Urgent", is_completed=False).count()
+    num_critical_tasks = Task.objects.filter(priority__iexact="urgent", is_completed=False).count()
     num_completed_tasks = Task.objects.filter(is_completed=True).count()
 
     context = {
@@ -51,6 +51,19 @@ class TaskListView(generic.ListView):
         return context
 
 
+class TaskDetailView(generic.DetailView):
+    model = Task
+    template_name = "manager/task_detail.html"
+    context_object_name = "task"
+
+    def get_queryset(self):
+        return Task.objects.select_related(
+            "task_type",
+            "project",
+            "team",
+        ).prefetch_related("assignees", "tags")
+
+
 class WorkerListView(generic.ListView):
     model = Worker
     template_name = "manager/worker_list.html"
@@ -70,6 +83,19 @@ class WorkerListView(generic.ListView):
         return context
 
 
+class WorkerDetailView(generic.DetailView):
+    model = Worker
+    template_name = "manager/worker_detail.html"
+    context_object_name = "worker"
+
+    def get_queryset(self):
+        return Worker.objects.prefetch_related(
+            "tasks__project",
+            "tasks__task_type",
+            "teams__projects"
+        )
+
+
 class ProjectListView(generic.ListView):
     model = Project
     template_name = "manager/project_list.html"
@@ -87,6 +113,20 @@ class ProjectListView(generic.ListView):
         context = super().get_context_data(**kwargs)
         context["search_name"] = self.request.GET.get("name", "")
         return context
+
+
+class TeamListView(generic.ListView):
+    model = Team
+    template_name = "manager/team_list.html"
+    context_object_name = "team_list"
+    paginate_by = 5
+
+    def get_queryset(self):
+        return Team.objects.prefetch_related("workers", "projects")
+
+
+
+
 
 
 

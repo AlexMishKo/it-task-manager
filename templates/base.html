@@ -54,6 +54,12 @@
                         📋 Tasks
                     </a>
                 </li>
+                <li>
+                    <a href="{% url 'manager:team-list' %}"
+                       class="{% if request.resolver_match.url_name == 'team-list' %}active{% endif %}">
+                       🛡️ Teams
+                    </a>
+                </li>
 
                 <li>
                     <a href="{% url 'manager:worker-list' %}"

@@ -46,10 +46,17 @@ class ProjectAdmin(admin.ModelAdmin):
 
     inlines = [TaskInline]
 
+
+@admin.register(Team)
+class TeamAdmin(admin.ModelAdmin):
+    list_display = ("name",)
+    filter_horizontal = ("workers", )
+
+
 admin.site.register(Position)
 admin.site.register(TaskType)
 admin.site.register(Tag)
-admin.site.register(Team)
+
 
 
 

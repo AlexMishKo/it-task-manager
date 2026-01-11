@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="mb-8">
+    <h1 class="text-3xl font-black italic uppercase tracking-tighter text-primary">
+        Deployment Units (Teams)
+    </h1>
+    <p class="text-base-content/60 text-sm italic">
+        Current tactical team distribution.
+    </p>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    {% for team in team_list %}
+    <div class="card bg-base-100 shadow-xl border border-base-300 overflow-hidden">
+        <div class="card-body">
+            <h2 class="card-title text-2xl font-black uppercase italic text-secondary border-b border-base-200 pb-2">
+                {{ team.name }}
+            </h2>
+            
+            <div class="mt-4">
+                <span class="text-[10px] font-black opacity-40 uppercase tracking-widest block mb-2">Active Personnel</span>
+                <div class="flex flex-wrap gap-2">
+                    {% for worker in team.workers.all %}
+                        <div class="badge badge-outline font-bold text-xs">@{{ worker.username }}</div>
+                    {% empty %}
+                        <span class="text-xs italic opacity-30">No agents assigned</span>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="mt-6">
+                <span class="text-[10px] font-black opacity-40 uppercase tracking-widest block mb-2">Assigned Sectors (Projects)</span>
+                <div class="space-y-1">                    
+                    {% for project in team.projects.all %}
+                        <div class="text-sm font-bold italic text-primary">» {{ project.name }}</div>
+                    {% empty %}
+                        <div class="text-xs italic opacity-30">No active projects</div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-span-full text-center py-20 bg-base-100 rounded-box border-2 border-dashed border-base-300">
+        <p class="text-xl font-bold opacity-30 italic text-uppercase">No teams formed yet.</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
