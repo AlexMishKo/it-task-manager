@@ -1,6 +1,10 @@
 from django.db.models import Q
 from django.shortcuts import render
+from django.urls import reverse_lazy
 from django.views import generic
+
+from .forms.task_form import TaskForm
+
 from .models import (
     Worker,
     Task,
@@ -63,6 +67,34 @@ class TaskDetailView(generic.DetailView):
             "project",
             "team",
         ).prefetch_related("assignees", "tags")
+
+
+class TaskCreateView(generic.CreateView):
+    model = Task
+    form_class = TaskForm
+    template_name = "manager/forms/task_form.html"
+    success_url = reverse_lazy("manager:task-list")
+
+    def get_initial(self):
+        initial = super().get_initial()
+        project_id = self.request.GET.get("project")
+        worker_id = self.request.GET.get("worker")
+
+        if project_id:
+            initial["project"] = project_id
+        if worker_id:
+            initial["assignees"] = [worker_id]
+
+        return initial
+
+
+class TaskUpdateView(generic.UpdateView):
+    model = Task
+    form_class = TaskForm
+    template_name = "manager/forms/task_form.html"
+
+    def get_success_url(self):
+        return reverse_lazy("manager:task-detail", kwargs={"pk": self.object.pk})
 
 
 class WorkerListView(generic.ListView):

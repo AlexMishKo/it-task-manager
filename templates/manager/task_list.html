@@ -1,35 +1,38 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
-    <div>
-        <h1 class="text-3xl font-black italic uppercase tracking-tighter text-primary">
+<div class="flex flex-col md:flex-row justify-between items-end mb-8 gap-4">
+    <div class="space-y-1">
+        <h1 class="text-4xl font-black italic uppercase tracking-tighter text-primary">
             Task Backlog
         </h1>
-        <p class="text-base-content/60 text-sm italic">
-            Tracking {{ page_obj.paginator.count }} active missions.
+        <p class="text-xs font-bold opacity-50 uppercase tracking-widest italic">
+            Tracking {{ paginator.count }} active missions.
         </p>
     </div>
-    
-    <form method="get" class="join shadow-sm border border-base-300">
-        <input 
-            type="text"
-            name="name"
-            placeholder="Search by name..." 
-            value="{{ search_name }}"
-            class="input input-bordered join-item input-sm lg:input-md w-full max-w-xs focus:outline-none" 
-        />
-        <button type="submit" class="btn join-item btn-sm lg:btn-md btn-primary italic">
-            Find
-        </button>
-    </form>
+
+    <div class="flex gap-3">
+        <form method="get" class="join shadow-sm">
+            <input name="name" 
+                   value="{{ request.GET.name }}"
+                   class="input input-bordered join-item input-sm focus:outline-none w-48 md:w-64 italic font-semibold" 
+                   placeholder="Search by name..." />
+            <button type="submit" class="btn btn-primary join-item btn-sm font-black uppercase italic px-6">
+                Find
+            </button>
+        </form>
+        
+        <a href="{% url 'manager:task-create' %}" class="btn btn-secondary btn-sm font-black uppercase italic px-4 shadow-lg border-2">
+            + New Deployment
+        </a>
+    </div>
 </div>
 
-<div class="overflow-x-auto bg-base-100 rounded-box shadow-2xl border border-base-300">
-    <table class="table w-full">
+<div class="bg-base-100 border border-base-300 rounded-xl overflow-hidden shadow-2xl">
+    <table class="table table-zebra w-full">
         <thead class="bg-base-200/50">
-            <tr class="text-sm uppercase font-black text-base-content/70">
-                <th>Task & Type</th>
+            <tr class="text-[10px] font-black uppercase tracking-widest opacity-60">
+                <th class="py-4">Task & Type</th>
                 <th>Project Context</th>
                 <th>Deadline</th>
                 <th>Priority</th>
@@ -37,71 +40,43 @@
                 <th class="text-right">Action</th>
             </tr>
         </thead>
-        <tbody class="divide-y divide-base-200">
+        <tbody>
             {% for task in task_list %}
-            <tr class="hover:bg-base-200/30 transition-colors">
-                <td>
-                    <a href="{% url 'manager:task-detail' pk=task.id %}" class="hover:text-primary transition-colors">
-                        <div class="font-extrabold text-base">{{ task.name }}</div>
-                    </a>
-                    <div class="text-[10px] uppercase font-bold opacity-40 tracking-widest">
-                        {{ task.task_type.name }}
+            <tr class="hover:bg-primary/5 transition-colors group">
+                <td class="py-4">
+                    <div class="flex flex-col">
+                        <span class="font-black italic uppercase text-md tracking-tight group-hover:text-primary transition-colors">
+                            {{ task.name }}
+                        </span>
+                        <span class="text-[10px] font-bold opacity-40 uppercase tracking-tighter italic">
+                            {{ task.task_type.name }}
+                        </span>
                     </div>
                 </td>
                 <td>
-                    <span class="badge badge-outline border-base-300 text-[11px]
-                                 font-bold py-3 uppercase tracking-tighter italic">
-                        {{ task.project.name|default:"Internal" }}
+                    <span class="badge badge-outline font-black italic text-[9px] px-3 py-3 uppercase tracking-tighter">
+                        {{ task.project.name }}
                     </span>
                 </td>
-                <td class="text-sm font-medium">
+                <td class="font-bold text-xs opacity-70">
                     {{ task.deadline|date:"d M Y" }}
                 </td>
                 <td>
-                    {% if task.priority|lower == "urgent" %}
-                        <div class="badge bg-red-600 border-none text-white gap-1
-                                    font-black text-[10px] py-3 px-3 shadow-md
-                                    shadow-red-200 animate-pulse uppercase tracking-widest">
-                            🔥 URGENT
-                        </div>
-                    {% elif task.priority|lower == "high" %}
-                        <div class="badge bg-orange-500 border-none text-white gap-1
-                                    font-bold text-[10px] py-3 px-3 uppercase">
-                            HIGH
-                        </div>
-                    {% elif task.priority|lower == "medium" %}
-                        <div class="badge bg-blue-500 border-none text-white gap-1
-                                    font-bold text-[10px] py-3 px-3 uppercase">
-                            MEDIUM
-                        </div>
-                    {% else %}
-                        <div class="badge badge-ghost border-base-300 gap-1
-                                    font-bold text-[10px] py-3 px-3 opacity-60 uppercase">
-                            LOW
-                        </div>
-                    {% endif %}
+                    <span class="badge {% if task.priority == 'urgent' %}badge-error{% elif task.priority == 'high' %}badge-warning{% else %}badge-ghost border-base-300{% endif %} font-black uppercase text-[10px] italic py-3 px-4 shadow-sm">
+                        {% if task.priority == 'urgent' %}🔥 {% endif %}{{ task.priority }}
+                    </span>
                 </td>
                 <td>
-                    {% if task.is_completed %}
-                        <div class="badge badge-success text-white font-black
-                                    text-[10px] p-3 gap-1 italic tracking-widest">
-                            ✓ DONE
-                        </div>
-                    {% else %}
-                        <div class="flex items-center gap-2">
-                            <span class="relative flex h-2 w-2">
-                                <span class="animate-ping absolute inline-flex h-full
-                                             w-full rounded-full bg-info opacity-75"></span>
-                                <span class="relative inline-flex rounded-full h-2 w-2 bg-info"></span>
-                            </span>
-                            <span class="text-[10px] font-black italic text-info
-                                         uppercase tracking-widest">In Progress</span>
-                        </div>
-                    {% endif %}
+                    <div class="flex items-center gap-2">
+                        <div class="w-2 h-2 rounded-full {% if task.is_completed %}bg-success{% else %}bg-info{% endif %} animate-pulse"></div>
+                        <span class="text-[10px] font-black italic uppercase {% if task.is_completed %}text-success{% else %}text-info{% endif %}">
+                            {% if task.is_completed %}Done{% else %}In Progress{% endif %}
+                        </span>
+                    </div>
                 </td>
                 <td class="text-right">
-                    <a href="{% url 'manager:task-detail' pk=task.id %}" class="btn btn-ghost btn-xs font-black text-primary
-                                       hover:bg-primary hover:text-white uppercase tracking-tighter">
+                    <a href="{% url 'manager:task-detail' task.id %}" 
+                       class="text-[10px] font-black italic uppercase text-primary hover:underline tracking-widest">
                         Details
                     </a>
                 </td>
@@ -109,13 +84,9 @@
             {% empty %}
             <tr>
                 <td colspan="6" class="text-center py-20">
-                    <div class="flex flex-col items-center gap-2 opacity-20">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16" fill="none"
-                             viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                  d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        <p class="text-2xl font-black italic">No matches found</p>
+                    <div class="flex flex-col items-center opacity-20">
+                        <span class="text-6xl mb-4">📡</span>
+                        <p class="font-black italic uppercase tracking-[0.3em]">No active signals found</p>
                     </div>
                 </td>
             </tr>
@@ -125,21 +96,18 @@
 </div>
 
 {% if is_paginated %}
-<div class="flex justify-center mt-10 mb-10">
-    <div class="join shadow-md">
+<div class="flex justify-center mt-8">
+    <div class="join shadow-xl border-2 border-base-300">
         {% if page_obj.has_previous %}
-            <a href="?{% if search_name %}name={{ search_name }}&{% endif %}page={{ page_obj.previous_page_number }}"
-               class="join-item btn btn-md bg-base-100 italic">« Prev</a>
+            <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.name %}&name={{ request.GET.name }}{% endif %}" class="join-item btn btn-sm bg-base-100 font-black italic uppercase">«</a>
         {% endif %}
-
-        <button class="join-item btn btn-md btn-disabled bg-base-200
-                       text-base-content font-black italic uppercase">
-            Page {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}
+        
+        <button class="join-item btn btn-sm bg-base-200 no-animation font-black italic uppercase text-[10px] px-8">
+            Page {{ page_obj.number }} / {{ paginator.num_pages }}
         </button>
-
+        
         {% if page_obj.has_next %}
-            <a href="?{% if search_name %}name={{ search_name }}&{% endif %}page={{ page_obj.next_page_number }}" 
-               class="join-item btn btn-md bg-base-100 italic">Next »</a>
+            <a href="?page={{ page_obj.next_page_number }}{% if request.GET.name %}&name={{ request.GET.name }}{% endif %}" class="join-item btn btn-sm bg-base-100 font-black italic uppercase">»</a>
         {% endif %}
     </div>
 </div>

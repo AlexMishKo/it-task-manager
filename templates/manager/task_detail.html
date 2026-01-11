@@ -40,18 +40,14 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2">
             <div class="p-8 border-b md:border-b-0 md:border-r border-base-200 bg-base-200/5">
-                <h3 class="text-[10px] font-black uppercase tracking-[0.2em] mb-6 text-center opacity-40">
-                    Deployed Personnel
-                </h3>
+                <h3 class="text-[10px] font-black uppercase tracking-[0.2em] mb-6 text-center opacity-40 text-secondary">Deployed Personnel</h3>
                 
                 {% if task.team %}
                 <div class="collapse collapse-arrow bg-base-100 border border-base-300 rounded-lg shadow-sm mb-6">
                     <input type="checkbox" checked /> 
                     <div class="collapse-title py-4">
                         <span class="text-[9px] font-black opacity-40 uppercase block mb-1">Tactical Unit</span>
-                        <span class="text-sm font-black italic text-secondary uppercase tracking-tighter">
-                            {{ task.team.name }}
-                        </span>
+                        <span class="text-sm font-black italic text-secondary uppercase tracking-tighter">{{ task.team.name }}</span>
                     </div>
                     <div class="collapse-content border-t border-base-200 bg-base-200/5">
                         <div class="flex flex-wrap gap-2 pt-4">
@@ -76,11 +72,7 @@
                                 <span class="bg-blue-600 text-white text-[8px] px-1.5 py-0.5 rounded-sm font-black tracking-tighter leading-none">LEAD</span>
                             </a>
                         {% empty %}
-                            {% if not task.team %}
-                            <div class="flex flex-col items-center py-6 px-10 border-2 border-dashed border-error/20 rounded-2xl bg-error/5 w-full">
-                                <span class="text-error font-black italic uppercase tracking-widest text-[10px] text-center">No Active Deployment</span>
-                            </div>
-                            {% endif %}
+                            <div class="text-center py-4 opacity-30 italic text-[10px] uppercase">No individual leads</div>
                         {% endfor %}
                     </div>
                 </div>
@@ -91,9 +83,13 @@
                 <div class="space-y-6">
                     <div class="text-center">
                         <span class="text-[10px] font-black opacity-60 uppercase block mb-1">Sector:</span>
-                        <a href="{% url 'manager:project-detail' task.project.id %}" class="text-xl font-black italic text-primary hover:text-secondary transition-colors uppercase tracking-tight">
-                            {{ task.project.name }}
-                        </a>
+                        {% if task.project %}
+                            <a href="{% url 'manager:project-detail' task.project.id %}" class="text-xl font-black italic text-primary hover:text-secondary transition-colors uppercase tracking-tight">
+                                {{ task.project.name }}
+                            </a>
+                        {% else %}
+                            <span class="text-xl font-black italic opacity-40 uppercase">Independent</span>
+                        {% endif %}
                     </div>
                     <div class="text-center">
                         <span class="text-[10px] font-black opacity-60 uppercase block mb-1">Deadline:</span>
@@ -109,7 +105,7 @@
                 <span class="text-[10px] font-black opacity-50 uppercase">#{{ tag.name }}</span>
                 {% endfor %}
             </div>
-            <a href="#" class="btn btn-sm btn-primary italic font-black uppercase px-6">Edit Task</a>
+            <a href="{% url 'manager:task-update' task.id %}" class="btn btn-sm btn-primary italic font-black uppercase px-6 shadow-lg">Edit Task</a>
         </div>
     </div>
 </div>

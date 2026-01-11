@@ -28,9 +28,7 @@
                 {% for team in project.teams.all %}
                 <div class="collapse collapse-arrow bg-base-100 border border-base-300 shadow-sm">
                     <input type="radio" name="teams-accordion" /> 
-                    <div class="collapse-title font-bold italic uppercase text-sm">
-                        {{ team.name }}
-                    </div>
+                    <div class="collapse-title font-bold italic uppercase text-sm">{{ team.name }}</div>
                     <div class="collapse-content">
                         <div class="flex flex-wrap gap-2 mt-2">
                             {% for worker in team.workers.all %}
@@ -49,8 +47,13 @@
     <div class="lg:col-span-2">
         <div class="bg-base-100 border border-base-300 rounded-xl overflow-hidden shadow-xl">
             <div class="p-4 bg-base-300/50 border-b border-base-300 flex justify-between items-center">
-                <h3 class="text-sm font-black uppercase tracking-widest">Active Operations (Tasks)</h3>
-                <span class="badge badge-primary font-black">{{ project.tasks.count }} Total</span>
+                <div class="flex items-center gap-4">
+                    <h3 class="text-sm font-black uppercase tracking-widest">Active Operations</h3>
+                    <span class="badge badge-primary font-black">{{ project.tasks.count }}</span>
+                </div>
+                <a href="{% url 'manager:task-create' %}?project={{ project.id }}" class="btn btn-xs btn-primary font-black uppercase italic px-4 shadow">
+                    + Add Task
+                </a>
             </div>
             <div class="divide-y divide-base-300">
                 {% for task in project.tasks.all %}
@@ -61,15 +64,12 @@
                                 {{ task.name }}
                             </span>
                             <span class="badge badge-xs font-black uppercase 
-                                {% if task.priority == 'urgent' %}badge-error
-                                {% elif task.priority == 'high' %}badge-warning
-                                {% elif task.priority == 'medium' %}badge-info
-                                {% else %}badge-ghost{% endif %}">
+                                {% if task.priority == 'urgent' %}badge-error{% elif task.priority == 'high' %}badge-warning{% else %}badge-ghost{% endif %}">
                                 {{ task.priority }}
                             </span>
                         </div>
                         <div class="text-[10px] opacity-50 uppercase mt-1 font-bold">                            
-                            Deadline: {{ task.deadline|date:"Y-m-d" }} | Assigned Unit: {{ task.team.name|default:"Unassigned" }}
+                            Deadline: {{ task.deadline|date:"M. d, Y" }} | Unit: {{ task.team.name|default:"Unassigned" }}
                         </div>
                     </div>
                     <a href="{% url 'manager:task-detail' task.id %}" class="btn btn-sm btn-ghost btn-square group-hover:text-primary">
@@ -77,9 +77,7 @@
                     </a>
                 </div>
                 {% empty %}
-                <div class="p-10 text-center opacity-30 italic font-bold uppercase tracking-widest">
-                    No active operations found in this sector.
-                </div>
+                <div class="p-10 text-center opacity-30 italic font-bold uppercase tracking-widest">No operations found</div>
                 {% endfor %}
             </div>
         </div>
