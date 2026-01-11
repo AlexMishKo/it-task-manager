@@ -94,3 +94,6 @@ class Task(models.Model):
     )
     deadline = models.DateField()
     is_completed = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.name

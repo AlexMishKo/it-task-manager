@@ -152,9 +152,22 @@ class TeamListView(LoginRequiredMixin, generic.ListView):
     model = Team
     paginate_by = 6
 
+    def get_queryset(self):
+        return Team.objects.prefetch_related(
+            "projects",
+            "workers__position"
+        )
+
 
 class TeamDetailView(LoginRequiredMixin, generic.DetailView):
     model = Team
+
+    def get_queryset(self):
+        return Team.objects.prefetch_related(
+            "projects",
+            "workers__position",
+            "tasks__task_type"
+        )
 
 
 class TeamCreateView(LoginRequiredMixin, UserPassesTestMixin, generic.CreateView):
@@ -204,12 +217,18 @@ class WorkerListView(LoginRequiredMixin, generic.ListView):
 
 class WorkerDetailView(LoginRequiredMixin, generic.DetailView):
     model = Worker
+    queryset = Worker.objects.select_related("position")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["assigned_tasks"] = Task.objects.filter(
             Q(assignees=self.object) | Q(team__workers=self.object)
-        ).distinct().select_related("project")
+        ).distinct().select_related(
+            "project",
+            "task_type",
+            "team"
+        ).prefetch_related("assignees__position")
+
         return context
 
 
