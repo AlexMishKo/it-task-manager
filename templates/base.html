@@ -9,6 +9,7 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
         body { font-family: 'Inter', sans-serif; }
+        .active { pointer-events: none; }
     </style>
 </head>
 <body class="min-h-screen bg-base-200">
@@ -16,86 +17,23 @@
     <div class="drawer lg:drawer-open">
         <input id="main-drawer" type="checkbox" class="drawer-toggle" />
 
-        <div class="drawer-content flex flex-col p-6 lg:p-10">
+        <div class="drawer-content flex flex-col p-4 lg:p-10">
+
             <div class="flex justify-between items-center lg:hidden mb-6 bg-base-100 p-4 rounded-xl shadow-sm border border-base-300">
                 <label for="main-drawer" class="btn btn-ghost btn-sm">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block w-5 h-5 stroke-current">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
                     </svg>
                 </label>
-                <span class="font-black uppercase tracking-tighter text-primary">Task Manager</span>
+                <span class="font-black italic uppercase text-sm tracking-tighter text-primary">TM HQ</span>
             </div>
 
-            <main class="container mx-auto">
+            <main class="max-w-7xl mx-auto w-full">
                 {% block content %}{% endblock %}
             </main>
         </div>
 
-        <div class="drawer-side z-40">
-            <label for="main-drawer" class="drawer-overlay"></label>
-            <ul class="menu p-6 w-72 min-h-full bg-base-100 text-base-content border-r border-base-300 gap-2">
-
-                <div class="px-4 py-6 mb-4 border-b border-base-200">
-                    <div class="flex items-center gap-3">
-                        <div class="w-12 h-12 bg-primary flex items-center justify-center rounded-xl shadow-lg border-2 border-primary-content/20">
-                            <span class="text-white font-black text-2xl tracking-tighter">TM</span>
-                        </div>
-                        <div>
-                            <h2 class="font-black uppercase tracking-tighter leading-none text-xl">Task Manager</h2>
-                            <p class="text-[9px] font-bold opacity-40 uppercase tracking-[0.2em] mt-1">Management HQ</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="text-[10px] font-black opacity-30 uppercase tracking-[0.2em] px-4 mb-2 italic">Main Navigation</div>
-
-                {% with request.resolver_match.url_name as url_name %}
-                <li>
-                    <a href="{% url 'manager:index' %}"
-                       class="flex gap-4 font-bold uppercase text-sm py-3 {% if url_name == 'index' %}active bg-primary text-primary-content shadow-md{% endif %}">
-                       📊 Dashboard
-                    </a>
-                </li>
-
-                <li>
-                    <a href="{% url 'manager:project-list' %}"
-                       class="flex gap-4 font-bold uppercase text-sm py-3 {% if url_name == 'project-list' or url_name == 'project-detail' %}active bg-primary text-primary-content shadow-md{% endif %}">
-                       📂 Projects
-                    </a>
-                </li>
-
-                <li>
-                    <a href="{% url 'manager:task-list' %}"
-                       class="flex gap-4 font-bold uppercase text-sm py-3 {% if url_name == 'task-list' or url_name == 'task-detail' or url_name == 'task-create' or url_name == 'task-update' %}active bg-primary text-primary-content shadow-md{% endif %}">
-                        📋 Tasks
-                    </a>
-                </li>
-
-                <li>
-                    <a href="{% url 'manager:team-list' %}"
-                       class="flex gap-4 font-bold uppercase text-sm py-3 {% if url_name == 'team-list' or url_name == 'team-detail' %}active bg-primary text-primary-content shadow-md{% endif %}">
-                       🛡️ Teams
-                    </a>
-                </li>
-
-                <li>
-                    <a href="{% url 'manager:worker-list' %}"
-                       class="flex gap-4 font-bold uppercase text-sm py-3 {% if url_name == 'worker-list' or url_name == 'worker-detail' %}active bg-primary text-primary-content shadow-md{% endif %}">
-                       👥 Workers
-                    </a>
-                </li>
-                {% endwith %}
-
-                <div class="mt-auto pt-10">
-                    <div class="divider text-[10px] opacity-30 uppercase tracking-[0.2em] font-black">Admin Panel</div>
-                    <li>
-                        <a href="/admin/" target="_blank" class="flex gap-4 font-bold uppercase text-[12px] opacity-70 hover:opacity-100 transition-opacity">
-                            ⚙️ Django Admin
-                        </a>
-                    </li>
-                </div>
-            </ul>
-        </div>
+        {% include "includes/sidebar.html" %}
     </div>
 
 </body>
